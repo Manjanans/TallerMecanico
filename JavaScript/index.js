@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mysqlConnection = require('./mysql');
+const { redirect } = require('express/lib/response');
 
 const app = express();
 const port = 3000;
