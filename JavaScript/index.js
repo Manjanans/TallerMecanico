@@ -22,9 +22,19 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/servicios', function (req, res) {
-    res.render('servicios');
+app.get('/ver_servicios', (req, res) => {
+  const query = 'CALL PRC_TP_SERVICIO();';  // Modify this query based on your database schema
+  mysqlConnection.query(query, (error, results) => {
+      if (error) {
+          console.error('Error executing query:', error);
+          res.status(500).send('Internal Server Error');
+          return;
+      }
+      res.render('ver_servicios', { tp_servicio: results[0] });
   });
+});
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
