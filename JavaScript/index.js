@@ -32,7 +32,7 @@ app.post('/validar', function (req, res) {
     let descripcion = datos.descripcion;
     let registrar = `CALL PRC_INS_TS('${descripcion}')`;
   
-    conexion.query(registrar, function (error) {
+    mysqlConnection.query(registrar, function (error) {
       if (error) {
         throw error;
       } else {
@@ -41,6 +41,7 @@ app.post('/validar', function (req, res) {
     });
   
     console.log(datos);
+    res.redirect('/');
   });
 
   app.listen(port, () => {
