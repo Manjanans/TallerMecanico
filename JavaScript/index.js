@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mysqlConnection = require('./mysql');
+const { redirect } = require('express/lib/response');
 
 const app = express();
 const port = 3000;
@@ -21,9 +22,19 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/servicios', function (req, res) {
-    res.render('servicios');
+app.get('/ver_servicios', (req, res) => {
+  const query = 'CALL PRC_TP_SERVICIO();';  // Modify this query based on your database schema
+  mysqlConnection.query(query, (error, results) => {
+      if (error) {
+          console.error('Error executing query:', error);
+          res.status(500).send('Internal Server Error');
+          return;
+      }
+      res.render('ver_servicios', { tp_servicio: results[0] });
   });
+});
+
+
 
 app.get('/ver_horas',function(req,res){
   var disponible = [];
@@ -64,7 +75,7 @@ app.post('/validar', function (req, res) {
     let descripcion = datos.descripcion;
     let registrar = `CALL PRC_INS_TS('${descripcion}')`;
   
-    conexion.query(registrar, function (error) {
+    mysqlConnection.query(registrar, function (error) {
       if (error) {
         throw error;
       } else {
@@ -73,7 +84,12 @@ app.post('/validar', function (req, res) {
     });
   
     console.log(datos);
+<<<<<<< HEAD
 });
+=======
+    res.redirect('/');
+  });
+>>>>>>> 12870f8bb46c973588bbc040739e52c0bf07772f
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
