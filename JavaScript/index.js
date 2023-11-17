@@ -16,6 +16,10 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.get('/ag_servicios',(req,res) => {
+  res.render('ag_servicios')
+});
+
 
 app.get('/', (req, res) => {
     const query = 'CALL PRC_CLIENTE();';  // Modify this query based on your database schema
@@ -118,6 +122,25 @@ app.post('/validar', function (req, res) {
       }
     });
     console.log(datos);
+});
+
+
+app.post('/validarServ', function (req, res) {
+  const datos = req.body;
+  let id_tipo_serv = datos.id_tipo_serv;
+  let valor =  datos.valor;
+  let nomserv = datos.nomserv;
+  let imagen = datos.imagen;
+  let registrar = `CALL PRC_INS_S('${id_tipo_serv,nomserv,valor,imagen}')`;
+
+  mysqlConnection.query(registrar, function (error) {
+    if (error) {
+      throw error;
+    } else {
+      console.log('Datos almacenados correctamente');
+    }
+  });
+  console.log(datos);
 });
 
 app.listen(port, () => {
