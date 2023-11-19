@@ -141,22 +141,32 @@ app.post('/validar', function (req, res) {
 
 app.post('/validarServ', function (req, res) {
   const datos = req.body;
-  let id_tipo_serv = datos.id_tipo_serv;
-  let valor = datos.valor;
-  let nomserv = datos.nomserv;
-  let imagen = datos.imagen;
-  let registrar = `CALL PRC_INS_S('${id_tipo_serv, nomserv, valor, imagen}')`;
+  let id_tipo_serv = datos.tipoServicio;
+  let valor = datos.valorServicio;
+  let nomserv = datos.nombreServicio;
+  let imagen = datos.imagenServicio;
 
-  mysqlConnection.query(registrar, function (error) {
-    if (error) {
-      throw error;
-    } else {
-      console.log('Datos almacenados correctamente');
-    }
-  });
-  console.log(datos);
+  // Verifica que los valores no sean undefined antes de construir la consulta
+  if (id_tipo_serv !== undefined && valor !== undefined && nomserv !== undefined && imagen !== undefined) {
+    let registrar = `CALL PRC_INS_SERV(?, ?, ?, ?)`;
+
+    mysqlConnection.query(registrar, [id_tipo_serv, nomserv, valor, imagen], function (error) {
+      if (error) {
+        console.error(error);
+        throw error;
+      } else {
+        console.log('Datos almacenados correctamente');
+        res.send('Datos almacenados correctamente');
+      }
+    });
+  } else {
+    console.error('Alguno de los valores es undefined');
+    res.status(400).send('Bad Request: Alguno de los valores es undefined');
+    res.render('ver_servicios');
+  }
 });
+
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
-});
+}); 
