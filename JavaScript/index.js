@@ -4,13 +4,24 @@ const mysqlConnection = require('./mysql');
 const { redirect } = require('express/lib/response');
 const moment = require('moment');
 const mtz = require('moment-timezone');
-
+const multer = require('multer'); 
 require('moment/locale/es');
 mtz.locale('es-CL');
 
 const app = express();
 const port = 3000;
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/images/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
 
+const upload = multer({ storage: storage });
+
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -139,32 +150,26 @@ app.post('/validar', function (req, res) {
 });
 
 
-app.post('/validarServ', function (req, res) {
+app.post('/validarServ', upload.single('imagenServicio'), function (req, res) {
   const datos = req.body;
   let id_tipo_serv = datos.tipoServicio;
   let valor = datos.valorServicio;
   let nomserv = datos.nombreServicio;
-  let imagen = datos.imagenServicio;
-
-  // Verifica que los valores no sean undefined antes de construir la consulta
-  if (id_tipo_serv !== undefined && valor !== undefined && nomserv !== undefined && imagen !== undefined) {
-    let registrar = `CALL PRC_INS_SERV(?, ?, ?, ?)`;
-
-    mysqlConnection.query(registrar, [id_tipo_serv, nomserv, valor, imagen], function (error) {
-      if (error) {
-        console.error(error);
-        throw error;
-      } else {
-        console.log('Datos almacenados correctamente');
-        res.send('Datos almacenados correctamente');
-      }
-    });
-  } else {
-    console.error('Alguno de los valores es undefined');
-    res.status(400).send('Bad Request: Alguno de los valores es undefined');
-    res.render('ver_servicios');
-  }
+  let imageName = req.file ? req.file.filename : null;
+  const nameWithoutExtension = imageName ? path.parse(imageName).name : null;
+  let registrar = `CALL PRC_INS_SERV(?, ?, ?, ?)`;
+  mysqlConnection.query(registrar, [id_tipo_serv, nomserv, valor, nameWithoutExtension], function (error) {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al almacenar los datos.');
+    } else {
+      console.log('Datos almacenados correctamente');
+      res.send('Datos almacenados correctamente');
+    }
+  });
 });
+
+
 
 
 app.listen(port, () => {
