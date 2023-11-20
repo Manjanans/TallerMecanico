@@ -8,6 +8,7 @@
         rel="stylesheet" 
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
         crossorigin="anonymous">
+        <script src="/JavaScript/imageLoader.js"></script>
 </head>
 <body>
   <header>
@@ -41,9 +42,9 @@
         <thead>
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">NOMBRES</th>
-            <th scope="col">APELLIDOS</th>
-            <th scope="col">NUMFONO</th>
+            <th scope="col">ID tipo de servicio</th>
+            <th scope="col">Nombre de servicio</th>
+            <th scope="col">valor de servicio</th>
             <th scope="col">IMAGEN</th>
             <th scope="col">Eliminar Servicio</th>
             <th scope="col">Editar Servicio</th>
@@ -64,7 +65,7 @@
               </td>
               <td>
                 <form action="/edi_servicios/<%= servicioItem.ID_SERV %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= servicioItem.ID_SERV %>?');">
-                  <button type="submit" class="btn btn-danger" >Editar Servicio</button>
+                  <button type="submit" class="btn btn-warning">Editar Servicio</button>
                 </form>
               </td>
             </tr>

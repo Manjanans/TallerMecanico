@@ -194,46 +194,54 @@ app.post('/eli_servicios/:id', (req, res) => {
 
 
 
-app.get('/edi_servicios/:id', (req, res) => {
+app.post('/edi_servicios/:id', (req, res) => {
   const id_servicio = req.params.id;
 
   // Recupera información del servicio para prellenar el formulario
-  const query = 'SELECT * FROM SERVICIO WHERE ID_SERVICIO = ?';
+  const query = 'SELECT * FROM SERVICIO WHERE ID_SERV = ?';
   mysqlConnection.query(query, [id_servicio], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al obtener información del servicio');
     } else {
-      // Renderiza la página de edición con la información del servicio
-      res.render('edi_servicios', { servicio: results[0] });
+      // Ejecuta el procedimiento almacenado para obtener datos de tipo servicio
+      const proce = 'CALL PRC_TP_SERVICIO();';
+      mysqlConnection.query(proce, (error, tpResults) => {
+        if (error) {
+          console.error('Error executing proce:', error);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+
+        // Verifica los resultados en la consola
+        console.log('datos', { TP_SERVICIO: tpResults[0][0] });
+
+        // Renderiza la página de edición con la información del servicio y los datos de tipo servicio
+        res.render('edi_servicios', { servicio: results[0], TP_SERVICIO: tpResults[0][0] });
+      });
     }
   });
 });
 
-app.post('/edi_servicios/:id', (req, res) => {
-  const id_servicio = req.params.id;
-  const { nombreServicio, idtiposervico,valorServicio,imagenservicio } = req.body;
+app.post('/updatearServicios/:id', upload.single('imagenServicio'), (req, res) => {
+  const id_serv = req.params.id;
+  const { tipoServicio, nombreServicio, valorServicio } = req.body;
+  const imageName = req.file ? req.file.filename : null;
+  const nameWithoutExtension = imageName ? path.parse(imageName).name : null;
 
-  // Lógica para editar el servicio
-  const query = `CALL PRC_EDI_SERVICIO(?, ?, ?)`;
-  mysqlConnection.query(query, [id_servicio, nombreServicio,idtiposervico, valorServicio,imagenservicio], (error, results) => {
+  // Realiza la actualización en la base de datos
+  const query = 'UPDATE SERVICIO SET ID_TIPO_SERV = ?, NOMSERV = ?, VALOR = ?, IMAGEN = ? WHERE ID_SERV = ?';
+  mysqlConnection.query(query, [tipoServicio, nombreServicio, valorServicio, nameWithoutExtension, id_serv], (error) => {
     if (error) {
       console.error(error);
-      res.status(500).send('Error al editar el servicio');
+      res.status(500).send('Error al actualizar información del servicio');
     } else {
-      // Verifica si el servicio se editó correctamente
-      const mensaje = results[0][0].mensaje;
-      if (mensaje === 'Servicio editado correctamente') {
-        console.log('Servicio editado correctamente');
-        res.redirect('/ver_servicios');  // Redirige después de editar correctamente
-      } else {
-        console.log('El servicio no existe');
-        res.status(404).send('El servicio no existe');
-      }
+      // Redirige a la página que desees después de la actualización
+      res.redirect('/ver_servicios');
     }
   });
 });
-
+app.use('/JavaScript', express.static('JavaScript'));
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
   }); 

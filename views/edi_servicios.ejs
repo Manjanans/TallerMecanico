@@ -40,44 +40,42 @@
   </nav>
 
   <div class="container mt-4">
-    <form action="/edi_servicio/<%= servicio.ID_SERVICIO %>" method="post" enctype="multipart/form-data">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title text-center">Formulario de Edición de Servicio</h2>
-    
-                <div class="mb-3">
-                    <label for="tipoServicio" class="form-label">ID Tipo de Servicio:</label>
-                    <select class="form-select" id="tipoServicio" name="tipoServicio">
-                        <% TP_SERVICIO.forEach(tp_servicio => { %>
-                            <option value="<%= tp_servicio.ID_TIPO_SERV %>"
-                                <% if (tp_servicio.ID_TIPO_SERV === servicio.ID_TIPO_SERV) { %> selected <% } %>>
-                                <%= tp_servicio.DESCRIPCION %>
-                            </option>
-                        <% }); %>
-                    </select>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="nombreServicio" class="form-label">Nombre de Servicio:</label>
-                    <input type="text" class="form-control" id="nombreServicio" name="nombreServicio"
-                        value="<%= servicio.NOMSERV %>" required>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="valorServicio" class="form-label">Valor:</label>
-                    <input type="number" class="form-control" id="valorServicio" name="valorServicio"
-                        value="<%= servicio.VALOR %>" required>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="imagenServicio" class="form-label">Subir Nueva Imagen:</label>
-                    <input type="file" class="form-control" id="imagenServicio" name="imagenServicio">
-                </div>
-    
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            </div>
-        </div>
-    </form>
+    <form action="/updatearServicios/<%= servicio.ID_SERV %>" method="post" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= servicio.ID_SERV %>?');">
+      <div class="card">
+          <div class="card-body">
+              <h2 class="card-title text-center">Formulario de Edición de Servicio</h2>
+  
+              <div class="mb-3">
+                  <label for="tipoServicio" class="form-label">ID Tipo de Servicio:</label>
+                  <select class="form-select" id="tipoServicio" name="tipoServicio">
+                    <option value="<%= TP_SERVICIO.ID_TIPO_SERV %>"
+                      <% if (TP_SERVICIO.ID_TIPO_SERV === servicio.ID_TIPO_SERV) { %> selected <% } %>>
+                      <%= TP_SERVICIO.DESCRIPCION %>
+                    </option>
+                  </select>
+              </div>
+  
+              <div class="mb-3">
+                  <label for="nombreServicio" class="form-label">Nombre de Servicio:</label>
+                  <input type="text" class="form-control" id="nombreServicio" name="nombreServicio"
+                      value="<%= servicio.NOMSERV %>" required>
+              </div>
+  
+              <div class="mb-3">
+                  <label for="valorServicio" class="form-label">Valor:</label>
+                  <input type="number" class="form-control" id="valorServicio" name="valorServicio"
+                      value="<%= servicio.VALOR %>" required>
+              </div>
+  
+              <div class="mb-3">
+                  <label for="imagenServicio" class="form-label">Subir Nueva Imagen:</label>
+                  <input type="file" class="form-control" id="imagenServicio" name="imagenServicio">
+              </div>
+  
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+      </div>
+  </form>
     
   </div>
 
