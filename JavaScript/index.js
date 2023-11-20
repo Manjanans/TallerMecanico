@@ -20,8 +20,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -163,8 +161,32 @@ app.post('/validarServ', upload.single('imagenServicio'), function (req, res) {
       console.error(error);
       res.status(500).send('Error al almacenar los datos.');
     } else {
+      res.redirect('ver_servicios');
       console.log('Datos almacenados correctamente');
       res.send('Datos almacenados correctamente');
+    }
+  });
+});
+
+app.post('/eli_servicios/:id', (req, res) => {
+  const id_servicio = req.params.id;
+
+  
+  const query = `CALL PRC_ELI_SERVICIO(?)`;
+  mysqlConnection.query(query, [id_servicio], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al eliminar el servicio');
+    } else {
+      
+      const mensaje = results[0][0].mensaje;
+      if (mensaje === 'Servicio eliminado correctamente') {
+        console.log('Servicio eliminado correctamente');
+        res.redirect('/ver_servicios');  
+      } else {
+        console.log('El servicio no existe');
+        res.status(404).send('El servicio no existe');
+      }
     }
   });
 });
@@ -172,6 +194,46 @@ app.post('/validarServ', upload.single('imagenServicio'), function (req, res) {
 
 
 
+app.get('/edi_servicios/:id', (req, res) => {
+  const id_servicio = req.params.id;
+
+  // Recupera información del servicio para prellenar el formulario
+  const query = 'SELECT * FROM SERVICIO WHERE ID_SERVICIO = ?';
+  mysqlConnection.query(query, [id_servicio], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener información del servicio');
+    } else {
+      // Renderiza la página de edición con la información del servicio
+      res.render('edi_servicios', { servicio: results[0] });
+    }
+  });
+});
+
+app.post('/edi_servicios/:id', (req, res) => {
+  const id_servicio = req.params.id;
+  const { nombreServicio, idtiposervico,valorServicio,imagenservicio } = req.body;
+
+  // Lógica para editar el servicio
+  const query = `CALL PRC_EDI_SERVICIO(?, ?, ?)`;
+  mysqlConnection.query(query, [id_servicio, nombreServicio,idtiposervico, valorServicio,imagenservicio], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al editar el servicio');
+    } else {
+      // Verifica si el servicio se editó correctamente
+      const mensaje = results[0][0].mensaje;
+      if (mensaje === 'Servicio editado correctamente') {
+        console.log('Servicio editado correctamente');
+        res.redirect('/ver_servicios');  // Redirige después de editar correctamente
+      } else {
+        console.log('El servicio no existe');
+        res.status(404).send('El servicio no existe');
+      }
+    }
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
-}); 
+  }); 

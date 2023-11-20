@@ -188,6 +188,45 @@ END;
 
 DELIMITER //
 
+CREATE PROCEDURE PRC_ELI_SERVICIO(IN p_ID_SERVICIO INT)
+BEGIN
+  -- Verifica si el servicio existe antes de intentar eliminarlo
+  IF EXISTS (SELECT * FROM SERVICIO WHERE ID_SERV = p_ID_SERVICIO) THEN
+    -- Elimina el servicio
+    DELETE FROM SERVICIO WHERE ID_SERV = p_ID_SERVICIO;
+    SELECT 'Servicio eliminado correctamente' AS mensaje;
+  ELSE
+    SELECT 'El servicio no existe' AS mensaje;
+  END IF;
+END //
+
+DELIMITER //
+CREATE PROCEDURE PRC_EDI_SERVICIO(
+  IN p_ID_SERVICIO INT,
+  IN p_ID_TIPO_SERV INT,
+  IN p_NOMSERV VARCHAR(255),
+  IN p_VALOR INT,
+  IN p_IMAGEN VARCHAR(255)
+  
+)
+BEGIN
+
+  IF EXISTS (SELECT * FROM SERVICIO WHERE ID_SERV = p_ID_SERVICIO) THEN
+    UPDATE SERVICIO
+    SET ID_TIPO_SERV = p_ID_TIPO_SERV,
+		NOMSERV = p_NOMSERV,
+        VALOR = p_VALOR,
+        IMAGEN = p_IMAGEN
+    WHERE ID_SERV = p_ID_SERVICIO;
+    
+    SELECT 'Servicio editado correctamente' AS mensaje;
+  ELSE
+    SELECT 'El servicio no existe' AS mensaje;
+  END IF;
+END //
+
+DELIMITER //
+
 CREATE PROCEDURE PRC_INS_SERV(
   IN p_ID_TIPO_SERV INT,
   IN p_NOMSERV VARCHAR(255),
