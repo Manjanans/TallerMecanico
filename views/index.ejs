@@ -30,20 +30,19 @@
             <thead>
               <tr>
                 <th scope="col">ID</th>
-                <th scope="col">NOMBRES</th>
-                <th scope="col">APELLIDOS</th>
+                <th scope="col">NOMBRE COMPLETO</th>
+            
                 <th scope="col">NUMFONO</th>
-                <th scope="col">IMAGEN</th>
+                <th scope="col">USUARIO</th>
               </tr>
             </thead>
             <tbody>
                 <% users.forEach(user => { %>
                     <tr>
-                        <th scope="row"><%= user.ID_CLI %></th>
-                        <td><%= user.NOMBRES %></td>
-                        <td><%= user.APELLIDOS %></td>
-                        <td><%= user.NUMFONO %></td>
-                        <td><img src="/Images/<%= user.NOMBRES %>.jpg" alt="<%= user.NOMBRES %>" class="img-fluid" style="width: 15%; height: 15%;"></td>
+                        <th scope="row"><%= user.NUMERO %></th>
+                        <td><%= user.NOMBRE_COMPLETO %></td>
+                        <td><%= user.TELEFONO %></td>
+                        <td><%= user.US %></td>
                     </tr>  <!-- Modify this based on your database schema -->
                 <% }); %>
             </tbody>
