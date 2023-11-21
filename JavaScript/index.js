@@ -198,7 +198,7 @@ app.post('/edi_servicios/:id', (req, res) => {
   const id_servicio = req.params.id;
 
   // Recupera información del servicio para prellenar el formulario
-  const query = 'SELECT * FROM SERVICIO WHERE ID_SERV = ?';
+  const query = 'CALL PRC_BUS_SERV(?);';
   mysqlConnection.query(query, [id_servicio], (error, results) => {
     if (error) {
       console.error(error);
@@ -230,7 +230,7 @@ app.post('/updatearServicios/:id', upload.single('imagenServicio'), (req, res) =
   const nameWithoutExtension = imageName ? path.parse(imageName).name : null;
 
   // Realiza la actualización en la base de datos
-  const query = 'UPDATE SERVICIO SET ID_TIPO_SERV = ?, NOMSERV = ?, VALOR = ?, IMAGEN = ? WHERE ID_SERV = ?';
+  const query = 'CALL PRC_UPD_SERV(?, ?, ?, ?, ?);';
   mysqlConnection.query(query, [tipoServicio, nombreServicio, valorServicio, nameWithoutExtension, id_serv], (error) => {
     if (error) {
       console.error(error);
@@ -259,7 +259,7 @@ app.get('/ag_empleados', (req, res) => {
   // Realiza las dos consultas simultáneamente
   Promise.all([
     new Promise((resolve, reject) => {
-      const query1 = 'SELECT * FROM TIPO_EMPLEADO;';
+      const query1 = 'CALL PRC_VER_TE();';
       mysqlConnection.query(query1, (error, results) => {
         if (error) {
           console.error('Error executing query1:', error);
@@ -270,7 +270,7 @@ app.get('/ag_empleados', (req, res) => {
       });
     }),
     new Promise((resolve, reject) => {
-      const query2 = 'SELECT * FROM TIPO_CONTRATO;';
+      const query2 = 'CALL PRC_VER_TC();';
       mysqlConnection.query(query2, (error, results) => {
         if (error) {
           console.error('Error executing query2:', error);
