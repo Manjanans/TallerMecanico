@@ -241,7 +241,106 @@ app.post('/updatearServicios/:id', upload.single('imagenServicio'), (req, res) =
     }
   });
 });
-app.use('/JavaScript', express.static('JavaScript'));
+
+app.get('/ver_empleados', (req, res) => {
+  const query = 'CALL PRC_EMPLEADO();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    console.log('datos', { EMPLEADO: results[0] })
+    res.render('ver_empleados', { EMPLEADO: results[0] });
+  });
+});
+
+app.get('/ag_empleados', (req, res) => {
+  // Realiza las dos consultas simultáneamente
+  Promise.all([
+    new Promise((resolve, reject) => {
+      const query1 = 'SELECT * FROM TIPO_EMPLEADO;';
+      mysqlConnection.query(query1, (error, results) => {
+        if (error) {
+          console.error('Error executing query1:', error);
+          reject(error);
+        } else {
+          resolve(results); // Devuelve el array completo, no solo results[0]
+        }
+      });
+    }),
+    new Promise((resolve, reject) => {
+      const query2 = 'SELECT * FROM TIPO_CONTRATO;';
+      mysqlConnection.query(query2, (error, results) => {
+        if (error) {
+          console.error('Error executing query2:', error);
+          reject(error);
+        } else {
+          resolve(results); // Devuelve el array completo, no solo results[0]
+        }
+      });
+    })
+  ])
+    .then(([tp_empleado, tp_contrato]) => {
+      console.log('datos', { tp_empleado, tp_contrato });
+      res.render('ag_empleados', { tp_empleado, tp_contrato });
+    })
+    .catch((error) => {
+      res.status(500).send('Internal Server Error');
+    });
+});
+
+
+
+
+app.post('/valid_empleados', function (req, res) {
+  const datos = req.body;
+  const {
+    numRun,
+    nombres,
+    apellidos,
+    numFono,
+    email,
+    fechaNac,
+    direccion,
+    tipoEmpleado,
+    tipoContrato,
+    fechaCon,
+    sueldo,
+    usuario,
+    contrasenia
+  } = datos;
+
+  const registrar = `CALL PRC_INS_EMPLEADO(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  mysqlConnection.query(
+    registrar,
+    [
+      numRun,
+      nombres,
+      apellidos,
+      numFono,
+      email,
+      fechaNac,
+      direccion,
+      tipoEmpleado,
+      tipoContrato,
+      fechaCon,
+      sueldo,
+      usuario,
+      contrasenia
+    ],
+    function (error) {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error al almacenar los datos.');
+      } else {
+        res.redirect('/ver_empleados');
+        console.log('Datos almacenados correctamente');
+      }
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
   }); 

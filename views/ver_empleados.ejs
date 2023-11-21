@@ -31,6 +31,15 @@
           <div class="navbar-nav">
             <a class="nav-link active" aria-current="page" href="/">Clientes</a>
             <a class="nav-link" href="/ver_horas">Ver Horas</a>
+            <div class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="/ver_Empleados" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Empleados
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/ag_empleados">Agregar</a></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -40,31 +49,47 @@
     <table class="table border border-primary">
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">ID tipo de servicio</th>
-            <th scope="col">Nombre de servicio</th>
-            <th scope="col">valor de servicio</th>
-            <th scope="col">IMAGEN</th>
-            <th scope="col">Eliminar Servicio</th>
-            <th scope="col">Editar Servicio</th>
+            <th scope="col">RUT emp</th>
+            <th scope="col">Nombres</th>
+            <th scope="col">apellidos</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Email</th>
+            <th scope="col">Fecha nacimiento</th>
+            <th scope="col">Direccion</th>
+            <th scope="col">Tipo empleado</th>
+            <th scope="col">Tipo contrato</th>
+            <th scope="col">Fecha contrato</th>
+            <th scope="col">Sueldo</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Contraseña</th>
+            <th scope="col">Eliminar</th>
+            <th scope="col">Editar</th>
           </tr>
         </thead>
         <tbody>
-          <% servicio.forEach(servicioItem => { %>
+          <% EMPLEADO.forEach(EMPLEADOITEM => { %>
             <tr>
-              <th scope="row"><%= servicioItem.ID_SERV %></th>
-              <td><%= servicioItem.ID_TIPO_SERV %></td>
-              <td><%= servicioItem.NOMSERV %></td>
-              <td><%= servicioItem.VALOR %></td>
-              <td><img src="/Images/<%= servicioItem.IMAGEN %>.jpg" alt="<%= servicioItem.IMAGEN %>" class="img-fluid" style="width: 15%; height: 15%;"></td>
+              <th scope="row"><%= EMPLEADOITEM.NUMRUN %></th>
+              <td><%= EMPLEADOITEM.NOMBRES %></td>
+              <td><%= EMPLEADOITEM.APELLIDOS %></td>
+              <td><%= EMPLEADOITEM.NUMFONO %></td>
+              <td><%= EMPLEADOITEM.EMAIL %></td>
+              <td><%= EMPLEADOITEM.FECHA_NAC_FORMAT %></td>
+              <td><%= EMPLEADOITEM.DIRECCION %></td>
+              <td><%= EMPLEADOITEM.ID_TIPO_EMP %></td>
+              <td><%= EMPLEADOITEM.ID_TIPO_CON %></td>
+              <td><%= EMPLEADOITEM.FECHA_CONTRATO_FORMAT %></td>
+              <td><%= EMPLEADOITEM.SUELDO %></td>
+              <td><%= EMPLEADOITEM.USUARIO %></td>
+              <td><%= EMPLEADOITEM.CONTRASENIA %></td>
               <td>
-                <form action="/eli_servicios/<%= servicioItem.ID_SERV %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el servicio <%= servicioItem.ID_SERV %>?');">
-                  <button type="submit" class="btn btn-danger" >Eliminar Servicio</button>
+                <form action="/eli_empleados/<%= EMPLEADOITEM.NUMRUT %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el EMPLEADO <%= EMPLEADOITEM.NUMRUT %>?');">
+                  <button type="submit" class="btn btn-danger" >Eliminar</button>
                 </form>
               </td>
               <td>
-                <form action="/edi_servicios/<%= servicioItem.ID_SERV %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= servicioItem.ID_SERV %>?');">
-                  <button type="submit" class="btn btn-warning">Editar Servicio</button>
+                <form action="/edi_empleados/<%= EMPLEADOITEM.NUMRUT %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas editar el EMPLEADO <%= EMPLEADOITEM.NUMRUT %>?');">
+                  <button type="submit" class="btn btn-warning">Editar</button>
                 </form>
               </td>
             </tr>

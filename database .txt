@@ -188,6 +188,78 @@ END;
 
 DELIMITER //
 
+DELIMITER //
+CREATE PROCEDURE PRC_EMPLEADO()
+BEGIN
+    SELECT
+        NUMRUN,
+        NOMBRES,
+        APELLIDOS,
+        NUMFONO,
+        EMAIL,
+        DATE_FORMAT(FECHA_NAC, '%d/%m/%Y') AS FECHA_NAC_FORMAT,
+        DIRECCION,
+        ID_TIPO_EMP,
+        ID_TIPO_CON,
+        DATE_FORMAT(FECHA_CONTRATO, '%d/%m/%Y') AS FECHA_CONTRATO_FORMAT,
+        SUELDO,
+        USUARIO,
+        CONTRASENIA
+    FROM EMPLEADO;
+END;
+//
+
+USE taller_mecanico;
+ DELIMITER //
+
+CREATE PROCEDURE PRC_INS_EMPLEADO(
+  IN p_numRun INT,
+  IN p_nombres VARCHAR(255),
+  IN p_apellidos VARCHAR(255),
+  IN p_numFono VARCHAR(20),
+  IN p_email VARCHAR(255),
+  IN p_fechaNac DATE,
+  IN p_direccion VARCHAR(255),
+  IN p_idTipoEmp INT,
+  IN p_idTipoCon INT,
+  IN p_fechaContrato DATE,
+  IN p_sueldo DECIMAL(10, 2),
+  IN p_usuario VARCHAR(50),
+  IN p_contrasenia VARCHAR(50)
+)
+BEGIN
+  INSERT INTO EMPLEADO (
+    NUMRUN,
+    NOMBRES,
+    APELLIDOS,
+    NUMFONO,
+    EMAIL,
+    FECHA_NAC,
+    DIRECCION,
+    ID_TIPO_EMP,
+    ID_TIPO_CON,
+    FECHA_CONTRATO,
+    SUELDO,
+    USUARIO,
+    CONTRASENIA
+  ) VALUES (
+    p_numRun,
+    p_nombres,
+    p_apellidos,
+    p_numFono,
+    p_email,
+    p_fechaNac,
+    p_direccion,
+    p_idTipoEmp,
+    p_idTipoCon,
+    p_fechaContrato,
+    p_sueldo,
+    p_usuario,
+    p_contrasenia
+  );
+END //
+DELIMITER //
+
 CREATE PROCEDURE PRC_ELI_SERVICIO(IN p_ID_SERVICIO INT)
 BEGIN
   -- Verifica si el servicio existe antes de intentar eliminarlo
@@ -195,31 +267,6 @@ BEGIN
     -- Elimina el servicio
     DELETE FROM SERVICIO WHERE ID_SERV = p_ID_SERVICIO;
     SELECT 'Servicio eliminado correctamente' AS mensaje;
-  ELSE
-    SELECT 'El servicio no existe' AS mensaje;
-  END IF;
-END //
-
-DELIMITER //
-CREATE PROCEDURE PRC_EDI_SERVICIO(
-  IN p_ID_SERVICIO INT,
-  IN p_ID_TIPO_SERV INT,
-  IN p_NOMSERV VARCHAR(255),
-  IN p_VALOR INT,
-  IN p_IMAGEN VARCHAR(255)
-  
-)
-BEGIN
-
-  IF EXISTS (SELECT * FROM SERVICIO WHERE ID_SERV = p_ID_SERVICIO) THEN
-    UPDATE SERVICIO
-    SET ID_TIPO_SERV = p_ID_TIPO_SERV,
-		NOMSERV = p_NOMSERV,
-        VALOR = p_VALOR,
-        IMAGEN = p_IMAGEN
-    WHERE ID_SERV = p_ID_SERVICIO;
-    
-    SELECT 'Servicio editado correctamente' AS mensaje;
   ELSE
     SELECT 'El servicio no existe' AS mensaje;
   END IF;
