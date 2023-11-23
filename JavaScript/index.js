@@ -153,17 +153,14 @@ app.post('/validarServ', upload.single('imagenServicio'), function (req, res) {
   let id_tipo_serv = datos.tipoServicio;
   let valor = datos.valorServicio;
   let nomserv = datos.nombreServicio;
-  let imageName = req.file ? req.file.filename : null;
-  const nameWithoutExtension = imageName ? path.parse(imageName).name : null;
+  const imageName = req.file.filename;
   let registrar = `CALL PRC_INS_SERV(?, ?, ?, ?)`;
-  mysqlConnection.query(registrar, [id_tipo_serv, nomserv, valor, nameWithoutExtension], function (error) {
+  mysqlConnection.query(registrar, [id_tipo_serv, nomserv, valor, imageName], function (error) {
     if (error) {
       console.error(error);
       res.status(500).send('Error al almacenar los datos.');
     } else {
       res.redirect('ver_servicios');
-      console.log('Datos almacenados correctamente');
-      res.send('Datos almacenados correctamente');
     }
   });
 });
@@ -340,6 +337,94 @@ app.post('/valid_empleados', function (req, res) {
     }
   );
 });
+
+app.get('/ver_productos', (req, res) => {
+  const query = 'CALL PRC_PRODUCTOS();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    console.log('datos', { PRODUCTO: results[0] })
+    res.render('ver_productos', { PRODUCTO: results[0] });
+  });
+});
+
+app.get('/ag_productos', (req, res) => {
+  Promise.all([
+    new Promise((resolve, reject) => {
+      const query1 = 'CALL PRC_TP_PRODUCTOS();';
+      mysqlConnection.query(query1, (error, results) => {
+        if (error) {
+          console.error('Error executing query1:', error);
+          reject(error);
+        } else {
+          resolve(results[0]); 
+        }
+      });
+    }),
+    new Promise((resolve, reject) => {
+      const query2 = 'CALL PRC_TP_PROVEEDOR();';
+      mysqlConnection.query(query2, (error, results) => {
+        if (error) {
+          console.error('Error executing query2:', error);
+          reject(error);
+        } else {
+          resolve(results[0]); 
+        }
+      });
+    })
+  ])
+    .then(([tp_producto, provedor]) => {
+      console.log('datos', { tp_producto, provedor });
+      res.render('ag_productos', { tp_producto, provedor });
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      res.status(500).send('Internal Server Error');
+    });
+});
+
+app.post('/valid_productos', upload.single('imagen'), function (req, res) {
+  const datos = req.body;
+  const {
+    tipoProvedor,
+    tipoProducto,
+    nombreProducto,
+    stockProducto,
+    costoProducto,
+  } = datos;
+
+  if (!tipoProvedor || !tipoProducto || !nombreProducto || !stockProducto || !costoProducto || !req.file) {
+    return res.status(400).send('Todos los campos son obligatorios.');
+  }
+  const imagen = req.file.filename;
+
+  const registrar = `CALL PRC_INS_PRODUCTO(?, ?, ?, ?, ?, ?)`;
+  mysqlConnection.query(
+    registrar,
+    [
+      tipoProvedor,
+      tipoProducto,
+      nombreProducto,
+      stockProducto,
+      costoProducto,
+      imagen
+    ],
+    function (error) {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Error al almacenar los datos del producto.');
+      } else {
+        console.log('Datos del producto almacenados correctamente');
+        return res.redirect('/ver_productos');
+      }
+    }
+  );
+});
+
+
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
