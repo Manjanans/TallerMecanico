@@ -46,11 +46,10 @@
               <h2 class="card-title text-center">Formulario de Edición de Servicio</h2>
               
               <div class="mb-3">
-                <select class="form-select" id="idServicio" name="idServicio">
-                  <option value="<%= servicio %>"></option>
+                <select class="form-select" id="idServicio" name="idServicio" disabled>
+                  <option value="<%= servicio %>"><%= servicio %></option>
                 </select>
               </div>
-              <p><%= servicio %></p>
               <div class="mb-3">
                   <label for="tipoServicio" class="form-label">ID Tipo de Servicio:</label>
                   <select class="form-select" id="tipoServicio" name="tipoServicio">
