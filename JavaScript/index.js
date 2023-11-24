@@ -211,12 +211,11 @@ app.post('/edi_servicios/:id', (req, res) => {
   });
 });
 
-app.post('/updatearServicios/:id', upload.single('imagenServicio'), (req, res) => {
-  const id_serv = req.params.id;
-  const { tipoServicio, nombreServicio, valorServicio } = req.body;
-  const imageName = req.file ;
+app.post('/updatearServicios/', upload.single('imagenServicio'), (req, res) => {
+  const { idServicio,tipoServicio, nombreServicio, valorServicio } = req.body;
+  const imageName = req.file ? req.file.filename : null;
   const query = 'CALL PRC_UPD_SERV(?, ?, ?, ?, ?);';
-  mysqlConnection.query(query, [tipoServicio, nombreServicio, valorServicio,imageName, id_serv], (error) => {
+  mysqlConnection.query(query, [tipoServicio, nombreServicio, valorServicio, imageName, idServicio], (error) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al actualizar información del servicio');
