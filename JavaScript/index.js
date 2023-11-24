@@ -249,7 +249,7 @@ app.get('/ag_empleados', (req, res) => {
           console.error('Error executing query1:', error);
           reject(error);
         } else {
-          resolve(results); 
+          resolve(results[0]); 
         }
       });
     }),
@@ -260,7 +260,7 @@ app.get('/ag_empleados', (req, res) => {
           console.error('Error executing query2:', error);
           reject(error);
         } else {
-          resolve(results); 
+          resolve(results[0]); 
         }
       });
     })
