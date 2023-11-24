@@ -40,10 +40,16 @@
   </nav>
 
   <div class="container mt-4">
-    <form action="/updatearServicios/<%= servicio.ID_SERV %>" method="post" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= servicio.ID_SERV %>?');">
+    <form action="/updatearServicios/" method="post" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= servicio.ID_SERV %>?');">
       <div class="card">
           <div class="card-body">
               <h2 class="card-title text-center">Formulario de Edición de Servicio</h2>
+              
+              <div class="mb-3">
+                <select class="form-select" id="idServicio" name="idServicio">
+                  <option value="<%= servicio.ID_SERV %>"><%= servicio.ID_SERV %></option>
+                </select>
+              </div>
   
               <div class="mb-3">
                   <label for="tipoServicio" class="form-label">ID Tipo de Servicio:</label>
