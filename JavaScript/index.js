@@ -4,7 +4,7 @@ const mysqlConnection = require('./mysql');
 const { redirect } = require('express/lib/response');
 const moment = require('moment');
 const mtz = require('moment-timezone');
-const multer = require('multer'); 
+const multer = require('multer');
 require('moment/locale/es');
 mtz.locale('es-CL');
 
@@ -48,7 +48,7 @@ app.get('/ag_servicios', (req, res) => {
     }
     // Verifica los resultados en la consola
     console.log('datos', { TP_SERVICIO: results[0] });
-res.render('ag_servicios', { TP_SERVICIO: results[0] });
+    res.render('ag_servicios', { TP_SERVICIO: results[0] });
   });
 });
 
@@ -167,19 +167,17 @@ app.post('/validarServ', upload.single('imagenServicio'), function (req, res) {
 
 app.post('/eli_servicios/:id', (req, res) => {
   const id_servicio = req.params.id;
-
-  
   const query = `CALL PRC_ELI_SERVICIO(?)`;
   mysqlConnection.query(query, [id_servicio], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al eliminar el servicio');
     } else {
-      
+
       const mensaje = results[0][0].mensaje;
       if (mensaje === 'Servicio eliminado correctamente') {
         console.log('Servicio eliminado correctamente');
-        res.redirect('/ver_servicios');  
+        res.redirect('/ver_servicios');
       } else {
         console.log('El servicio no existe');
         res.status(404).send('El servicio no existe');
@@ -193,15 +191,12 @@ app.post('/eli_servicios/:id', (req, res) => {
 
 app.post('/edi_servicios/:id', (req, res) => {
   const id_servicio = req.params.id;
-
-  // Recupera información del servicio para prellenar el formulario
   const query = 'CALL PRC_BUS_SERV(?);';
   mysqlConnection.query(query, [id_servicio], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al obtener información del servicio');
     } else {
-      // Ejecuta el procedimiento almacenado para obtener datos de tipo servicio
       const proce = 'CALL PRC_TP_SERVICIO();';
       mysqlConnection.query(proce, (error, tpResults) => {
         if (error) {
@@ -209,11 +204,7 @@ app.post('/edi_servicios/:id', (req, res) => {
           res.status(500).send('Internal Server Error');
           return;
         }
-
-        // Verifica los resultados en la consola
         console.log('datos', { TP_SERVICIO: tpResults[0][0] });
-
-        // Renderiza la página de edición con la información del servicio y los datos de tipo servicio
         res.render('edi_servicios', { servicio: results[0], TP_SERVICIO: tpResults[0][0] });
       });
     }
@@ -225,15 +216,12 @@ app.post('/updatearServicios/:id', upload.single('imagenServicio'), (req, res) =
   const { tipoServicio, nombreServicio, valorServicio } = req.body;
   const imageName = req.file ? req.file.filename : null;
   const nameWithoutExtension = imageName ? path.parse(imageName).name : null;
-
-  // Realiza la actualización en la base de datos
   const query = 'CALL PRC_UPD_SERV(?, ?, ?, ?, ?);';
   mysqlConnection.query(query, [tipoServicio, nombreServicio, valorServicio, nameWithoutExtension, id_serv], (error) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al actualizar información del servicio');
     } else {
-      // Redirige a la página que desees después de la actualización
       res.redirect('/ver_servicios');
     }
   });
@@ -253,7 +241,6 @@ app.get('/ver_empleados', (req, res) => {
 });
 
 app.get('/ag_empleados', (req, res) => {
-  // Realiza las dos consultas simultáneamente
   Promise.all([
     new Promise((resolve, reject) => {
       const query1 = 'CALL PRC_VER_TE();';
@@ -262,7 +249,7 @@ app.get('/ag_empleados', (req, res) => {
           console.error('Error executing query1:', error);
           reject(error);
         } else {
-          resolve(results); // Devuelve el array completo, no solo results[0]
+          resolve(results); 
         }
       });
     }),
@@ -273,7 +260,7 @@ app.get('/ag_empleados', (req, res) => {
           console.error('Error executing query2:', error);
           reject(error);
         } else {
-          resolve(results); // Devuelve el array completo, no solo results[0]
+          resolve(results); 
         }
       });
     })
@@ -360,7 +347,7 @@ app.get('/ag_productos', (req, res) => {
           console.error('Error executing query1:', error);
           reject(error);
         } else {
-          resolve(results[0]); 
+          resolve(results[0]);
         }
       });
     }),
@@ -371,7 +358,7 @@ app.get('/ag_productos', (req, res) => {
           console.error('Error executing query2:', error);
           reject(error);
         } else {
-          resolve(results[0]); 
+          resolve(results[0]);
         }
       });
     })
@@ -424,8 +411,106 @@ app.post('/valid_productos', upload.single('imagen'), function (req, res) {
   );
 });
 
+app.post('/eli_productos/:id', (req, res) => {
+  const id_producto = req.params.id;
+  const query = `CALL PRC_ELI_PRODUCTO(?)`;
+  mysqlConnection.query(query, [id_producto], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al eliminar el producto');
+    } else {
+      const mensaje = results[0][0].mensaje;
+      if (mensaje === 'Producto eliminado correctamente') {
+        console.log('Producto eliminado correctamente');
+        res.redirect('/ver_productos');
+      } else {
+        console.log('El producto no existe');
+        res.status(404).send('El producto no existe');
+      }
+    }
+  });
+});
+
+app.get('/edi_productos/:id', (req, res) => {
+  const idProducto = req.params.id;
+
+
+  const queryProducto = 'SELECT * FROM Producto WHERE ID_PRODUCTO = ?';
+  const queryTiposProductos = 'SELECT * FROM TIPO_PROD';
+  const queryProveedores = 'SELECT * FROM Proveedor';
+
+
+  Promise.all([
+    new Promise((resolve, reject) => {
+      mysqlConnection.query(queryProducto, [idProducto], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results[0]);
+        }
+      });
+    }),
+    new Promise((resolve, reject) => {
+      mysqlConnection.query(queryTiposProductos, (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    }),
+    new Promise((resolve, reject) => {
+      mysqlConnection.query(queryProveedores, (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    }),
+  ])
+    .then(([producto, tiposProductos, proveedores]) => {
+      // Renderiza la vista edi_productos y pasa el producto, tipos de productos y proveedores
+      console.log('edi_productos', { producto, tiposProductos, proveedores });
+      res.render('edi_productos', { producto, tiposProductos, proveedores });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos del producto, tipos de productos y proveedores');
+    });
+});
+
+
+
+
+// Ruta para procesar la actualización del producto
+app.post('/updatearProductos/:id', upload.single('imagenProducto'), (req, res) => {
+  const idProducto = req.params.id;
+  const { idProveedor, idTipoProducto, nombreProducto, stock, costoProducto } = req.body;
+
+  // Obtiene el nombre de la imagen si se proporciona
+  const imageName = req.file ? req.file.filename : null;
+
+  // Realiza la actualización en la base de datos
+  const updateQuery =
+    'UPDATE Producto SET ID_PROV=?, ID_TIPO_PROD=?, NOMPROD=?, STOCK=?, COSTO_PROD=?, IMAGEN=? WHERE ID_PRODUCTO=?';
+
+  mysqlConnection.query(
+    updateQuery,
+    [idProveedor, idTipoProducto, nombreProducto, stock, costoProducto, imageName, idProducto],
+    (error) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error al actualizar el producto');
+      } else {
+        console.log('Producto actualizado correctamente');
+        res.redirect('/ver_productos');
+      }
+    }
+  );
+});
 
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
-  }); 
+}); 

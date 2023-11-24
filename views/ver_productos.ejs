@@ -63,14 +63,15 @@
               <td><%= PRODUCTOItem.COSTO_PROD %></td>
               <td><img src="/Images/<%= PRODUCTOItem.IMAGEN %>" alt="<%= PRODUCTOItem.IMAGEN %>" class="img-fluid" style="width: 15%; height: 15%;"></td>
               <td>
-                <form action="/eli_servicios/<%= PRODUCTOItem.ID_PRODUCTO %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el servicio <%= PRODUCTOItem.ID_PRODUCTO %>?');">
+                <form action="/eli_productos/<%= PRODUCTOItem.ID_PRODUCTO %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el servicio <%= PRODUCTOItem.ID_PRODUCTO %>?');">
                   <button type="submit" class="btn btn-danger" >Eliminar Servicio</button>
                 </form>
               </td>
               <td>
-                <form action="/edi_servicios/<%= PRODUCTOItem.ID_PRODUCTO %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= PRODUCTOItem.ID_PRODUCTO %>?');">
-                  <button type="submit" class="btn btn-warning">Editar Servicio</button>
+                <form action="/edi_productos/<%= PRODUCTOItem.ID_PRODUCTO %>" method="get" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que deseas editar el producto <%= PRODUCTOItem.ID_PRODUCTO %>?');">
+                  <button type="submit" class="btn btn-primary">Editar Producto</button>
                 </form>
+                
               </td>
             </tr>
           <% }); %>

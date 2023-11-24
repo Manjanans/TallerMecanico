@@ -339,6 +339,34 @@ CREATE PROCEDURE PRC_INS_PRODUCTO(
   IN p_costoProducto DECIMAL(10, 2),
   IN p_imagen VARCHAR(255)
 )
+DELIMITER //
+
+CREATE PROCEDURE PRC_ELI_PRODUCTO(
+  IN p_id_producto INT
+)
+BEGIN
+  DECLARE producto_existente INT;
+
+  -- Verificar si el producto existe
+  SELECT COUNT(*) INTO producto_existente FROM Producto WHERE ID_PRODUCTO = p_id_producto;
+
+  IF producto_existente > 0 THEN
+    -- El producto existe, proceder con la eliminación
+    DELETE FROM Producto WHERE ID_PRODUCTO = p_id_producto;
+    SELECT 'Producto eliminado correctamente' AS mensaje;
+  ELSE
+    -- El producto no existe
+    SELECT 'El producto no existe' AS mensaje;
+  END IF;
+  
+END; //
+
+DELIMITER //
+CREATE PROCEDURE PRC_BUS_PROD (IDTS INT)
+BEGIN
+	SELECT * FROM PRODUCTO WHERE ID_PRODUCTO = IDTS;
+END;//
+
 BEGIN
   INSERT INTO Producto (ID_PROV, ID_TIPO_PROD, NOMPROD, STOCK, COSTO_PROD, IMAGEN)
   VALUES (p_idProveedor, p_idTipoProducto, p_nombreProducto, p_stock, p_costoProducto, p_imagen);
