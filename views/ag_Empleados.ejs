@@ -89,6 +89,7 @@
           <div class="mb-3">
             <label for="tipoEmpleado" class="form-label">Tipo de empleado:</label>
             <select class="form-select" id="tipoEmpleado" name="tipoEmpleado">
+              <option value="">Selecciona un tipo de empleado</option>
               <% tp_empleado.forEach(tp_empleados => { %>
                 <option value="<%= tp_empleados.ID_TIPO_EMP %>">
                   <%= tp_empleados.DESCRIPCION %>
@@ -100,6 +101,7 @@
           <div class="mb-3">
             <label for="tipoContrato" class="form-label">ID Tipo de Contrato:</label>
             <select class="form-select" id="tipoContrato" name="tipoContrato">
+              <option value="">Selecciona un tipo de contrato</option>
               <% tp_contrato.forEach(tp_contratos => { %>
                 <option value="<%= tp_contratos.ID_TIPO_CON %>">
                   <%= tp_contratos.DESCRIPCION %>
