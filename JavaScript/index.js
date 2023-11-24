@@ -205,7 +205,7 @@ app.post('/edi_servicios/:id', (req, res) => {
           return;
         }
         console.log('datos', { TP_SERVICIO: tpResults[0][0] });
-        res.render('edi_servicios', { servicio: results[0], TP_SERVICIO: tpResults[0][0] });
+        res.render('edi_servicios', { servicio: id_servicio, TP_SERVICIO: tpResults[0][0] });
       });
     }
   });
