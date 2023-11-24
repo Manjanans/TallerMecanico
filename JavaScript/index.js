@@ -220,6 +220,7 @@ app.post('/updatearServicios/', upload.single('imagenServicio'), (req, res) => {
       console.error(error);
       res.status(500).send('Error al actualizar información del servicio');
     } else {
+      console.log(`${idServicio},${tipoServicio},${nombreServicio},${valorServicio}`);
       res.redirect('/ver_servicios');
     }
   });
