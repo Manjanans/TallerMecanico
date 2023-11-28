@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mysqlConnection = require('./mysql');
 const { redirect } = require('express/lib/response');
+const bodyParser = require('body-parser');
 const moment = require('moment');
 const mtz = require('moment-timezone');
 const multer = require('multer');
@@ -25,6 +26,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   const query = 'CALL PRC_CLIENTE();';  // Modify this query based on your database schema
@@ -78,6 +80,18 @@ app.get('/cliente-venta', (req, res) => {
 
 app.get('/comprobantes', (req, res) => {
   const query = 'CALL PRC_TIPO_COMP();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/pagos', (req, res) => {
+  const query = 'CALL PRC_FORMA_PAGO();';
   mysqlConnection.query(query, (error, results) => {
     if (error) {
       console.error('Error executing query:', error);
@@ -185,10 +199,35 @@ app.post('/updateHora', (req, res) => {
       console.log('Datos almacenados correctamente');
       res.redirect('/');
     }
-  })
+  });
 });
 
+app.post('/finalizar-venta', (req, res) => {
+  const detalle = req.body.data;
+  console.log(detalle);
+  const ids = req.body.aidis;
+  console.log(ids);
+  var total = 0;
 
+  detalle.forEach((element, index) => {
+    total+=element.subtotal;
+  });
+
+  const crearVenta = `CALL PRC_CREAR_VENTA(${total},${ids.hora},${ids.comprobante},${ids.pago});`;
+  mysqlConnection.query(crearVenta);
+  detalle.forEach((element, index) => {
+    if(element.tipoVenta == 'Producto'){
+      const crearProducto = `CALL PRC_DET_VENTA_PROD(${element.id},${element.cantidad},${element.subtotal});`;
+      mysqlConnection.query(crearProducto);
+    }else{
+      const crearServicio = `CALL PRC_DET_VENTA_SERV(${element.id},${element.cantidad},${element.subtotal});`;
+      mysqlConnection.query(crearServicio);
+    }
+  });
+
+  res.redirect('/');
+
+})
 
 app.post('/validar', function (req, res) {
   const datos = req.body;

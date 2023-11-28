@@ -36,6 +36,7 @@ document.getElementById('horaSelect').addEventListener('change', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const compro = document.getElementById('tipo_comp');
+    const pago = document.getElementById('forma_pago');
     $.ajax({
         url: '/comprobantes', 
         method: 'GET',
@@ -43,6 +44,19 @@ document.addEventListener('DOMContentLoaded', function() {
         success: function(data) {   
             data.forEach(comps => {
                 compro.innerHTML+=`<option value="${comps.NUM}">${comps.PTC}</option>`
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+    $.ajax({
+        url: '/pagos', 
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {   
+            data.forEach(comps => {
+                pago.innerHTML+=`<option value="${comps.NUM}">${comps.PTC}</option>`
             });
         },
         error: function(error) {
@@ -278,20 +292,32 @@ document.getElementById('agregar').addEventListener('click', function() {
     }
 });
 
-document.getElementById('finalizar').addEventListener('click', function() {
-    const comprobante = document.getElementById('tipo_comp').value;
+var arreglito = [];
 
-    if(comprobante!=""){
+document.getElementById('finalizar').addEventListener('click', function() {
+    const comprobante = parseInt(document.getElementById('tipo_comp').value);
+    const pago = parseInt(document.getElementById('forma_pago').value);
+    const hora = parseInt(document.getElementById('horaSelect').value);
+
+    if(comprobante!="" && pago !=""){
         $.ajax({
             url: '/finalizar-venta', 
             method: 'POST',
-            dataType: 'json',
-            data: {
-                'arreglito': arreglito,
-                'comprobante': comprobante
-            },
-            success: function(data) {   
-                setTimeout(function(){window.location.href = '/';},1000);
+            contentType: 'application/json',
+            data: JSON.stringify({
+                data: arreglito,
+                aidis: {
+                    comprobante: comprobante,
+                    pago: pago,
+                    hora: hora
+                }
+            }),
+            success: function(data) {
+                $(document).ready(function(){
+                    $('#success').modal('show');   
+                    setTimeout(function(){window.location.href = '/';},1000);
+                });
+                
             },
             error: function(error) {
                 console.error('Error fetching data:', error);
