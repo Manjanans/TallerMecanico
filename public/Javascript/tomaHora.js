@@ -1,29 +1,10 @@
-/*$('#horaSelect').on('change', function() {
-        // Get the selected ID_HORA
-        const selectedIdHora = $(this).val();
-
-        // Send a POST request to the server
-        $.ajax({
-            method: 'POST',
-            url: '/updateHora', // Adjust the endpoint
-            data: { idHora: selectedIdHora },
-            success: function(response) {
-                console.log('POST request successful:', response);
-            },
-            error: function(error) {
-                console.error('Error in POST request:', error);
-            }
-        });
-    });*/
-
 let selectedEvent;
 let oc = "blue";
 let idHorita = 0;
 let fecha = "";
 let hora = "";
 
-
-    $(document).ready(function() {
+$(document).ready(function() {
         $('#calendar').fullCalendar({
             header: {
                 left: 'prev,next,today',
@@ -52,9 +33,7 @@ let hora = "";
                 hora = event.inicial;                
             },
         });
-    });
-
-
+});
 
 $(document).ready(function(){
     $('#custom-alert-ok-btn').on('click',function(){

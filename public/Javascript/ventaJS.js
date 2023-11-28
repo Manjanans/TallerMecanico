@@ -1,3 +1,5 @@
+var arreglito = [];
+
 document.getElementById('horaSelect').addEventListener('change', function() {
     const hora = document.getElementById('horaSelect').value;
     if(hora != ""){
@@ -20,13 +22,15 @@ document.getElementById('horaSelect').addEventListener('change', function() {
         });
         document.getElementById("agregasion").hidden = false;
     }else{
-        document.getElementById('idCliente').value = "";
-        document.getElementById('nomCli').value = "";
-        document.getElementById('rutCli').value = "";
-        document.getElementById("agregasion").hidden = true;
-        document.getElementById("venta").hidden=true;
-        document.getElementById("tipo_venta").selectedIndex=0;
-        document.getElementById("tipo_comp").selectedIndex=0;
+        document.getElementById('agregasion').hidden=true;
+        document.getElementById('tipo_venta').selectedIndex=0;
+        document.getElementById('tipo_comp').selectedIndex=0;
+        document.getElementById('venta').hidden=true;
+        document.getElementById('paso-final').selectedIndex=0;
+        document.getElementById('idProdServ').value="";
+        document.getElementById('testo').hidden=true;
+        document.getElementById('quantity').hidden=true;
+        document.getElementById('quantity').value="";
     }    
 });
 
@@ -98,6 +102,13 @@ document.getElementById('tipo_venta').addEventListener('change', function() {
                 }
             });    
         }
+    }else{
+        document.getElementById('venta').hidden=true;
+        document.getElementById('paso-final').selectedIndex=0;
+        document.getElementById('idProdServ').value="";
+        document.getElementById('testo').hidden=true;
+        document.getElementById('quantity').hidden=true;
+        document.getElementById('quantity').value="";
     }
 });
 
@@ -106,8 +117,10 @@ document.getElementById('paso-final').addEventListener('change', function() {
     const tv = document.getElementById('tipo_venta').value;
 
     if(pf!=""){
+        document.getElementById('label').hidden=false;
         document.getElementById('testo').hidden=false;
         document.getElementById('quantity').hidden=false;
+        document.getElementById('agregar').hidden=false;
         if(tv == "Servicio"){
             $.ajax({
                 url: '/servicios', 
@@ -145,9 +158,14 @@ document.getElementById('paso-final').addEventListener('change', function() {
                 }
             });    
         }
+
     }else{
+        document.getElementById('idProdServ').value="";
         document.getElementById('testo').hidden=true;
         document.getElementById('quantity').hidden=true;
+        document.getElementById('quantity').value="";
+        document.getElementById('agregar').hidden=true;
+        document.getElementById('label').hidden=true;
     }
 });
 
@@ -165,6 +183,8 @@ document.getElementById('idProdServ').addEventListener('keyup', function(event) 
         if (option.value == codigo) {
             codigos.selectedIndex = index;
             document.getElementById('testo').hidden=false;
+            document.getElementById('label').hidden=false;
+            document.getElementById('quantity').hidden=false;
             if(tv == "Servicio"){
                 $.ajax({
                     url: '/servicios', 
@@ -203,3 +223,81 @@ document.getElementById('idProdServ').addEventListener('keyup', function(event) 
         }
     });
 });
+
+document.getElementById('agregar').addEventListener('click', function() {
+    const tipoVenta = document.getElementById('tipo_venta').value;
+    const idProdServ = document.getElementById('idProdServ').value;
+    const cantidad = document.getElementById('quantity').value;
+    const valor = document.getElementById('valor').innerHTML;
+    const quantity = parseInt(cantidad);
+    try{
+        const value = parseInt(valor);
+        const subtotal = quantity*value;
+        console.log(subtotal);
+        if(cantidad == ""){
+            alert("Todos los campos son obligatorios");
+        }else{
+            const venta = {
+                tipoVenta: tipoVenta,
+                id: idProdServ,
+                cantidad: quantity,
+                subtotal: subtotal
+            };
+        
+            arreglito.push(venta);
+            const tbody = document.querySelector("tbody");
+            const fila = document.createElement("tr");
+            const celda1 = document.createElement("td");
+            const celda2 = document.createElement("td");
+            const celda3 = document.createElement("td");
+            const celda4 = document.createElement("td");
+            celda1.textContent = tipoVenta;
+            celda2.textContent = document.getElementById('paso-final').options[document.getElementById('paso-final').selectedIndex].text;
+            celda3.textContent = cantidad;
+            celda4.textContent = subtotal;
+            fila.appendChild(celda1);
+            fila.appendChild(celda2);
+            fila.appendChild(celda3);
+            fila.appendChild(celda4);
+            tbody.appendChild(fila);
+            console.log(arreglito);
+            document.getElementById('tipo_venta').selectedIndex=0;
+            document.getElementById('tipo_comp').selectedIndex=0;
+            document.getElementById('venta').hidden=true;
+            document.getElementById('paso-final').selectedIndex=0;
+            document.getElementById('idProdServ').value="";
+            document.getElementById('testo').hidden=true;
+            document.getElementById('quantity').hidden=true;
+            document.getElementById('quantity').value="";
+            document.getElementById('label').hidden=true;
+            document.getElementById('end').hidden=false;
+            document.getElementById('finalizar').hidden=false;
+        }
+    }catch{
+        alert("Ingresa un número en la cantidad.");
+    }
+});
+
+document.getElementById('finalizar').addEventListener('click', function() {
+    const comprobante = document.getElementById('tipo_comp').value;
+
+    if(comprobante!=""){
+        $.ajax({
+            url: '/finalizar-venta', 
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                'arreglito': arreglito,
+                'comprobante': comprobante
+            },
+            success: function(data) {   
+                setTimeout(function(){window.location.href = '/';},1000);
+            },
+            error: function(error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }else{
+        alert("Elige un tipo de comprobante");
+    }
+})
