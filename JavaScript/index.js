@@ -52,7 +52,65 @@ app.get('/ag_servicios', (req, res) => {
   });
 });
 
+app.get('/venta', (req, res) => {
+  const query = 'CALL PRC_HORAS_PENDIENTES();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.render('venta', { horas: results[0] });
+  });
+});
 
+app.get('/cliente-venta', (req, res) => {
+  const query = 'CALL PRC_HORAS_PENDIENTES();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/comprobantes', (req, res) => {
+  const query = 'CALL PRC_TIPO_COMP();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/servicios', (req, res) => {
+  const query = 'CALL PRC_SERV_SIMPLE();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/productos', (req, res) => {
+  const query = 'CALL PRC_PROD_SIMPLE();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
 
 
 

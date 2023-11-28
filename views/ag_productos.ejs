@@ -48,6 +48,7 @@
           <div class="mb-3">
             <label for="tipoProvedor" class="form-label">Provedor:</label>
             <select class="form-select" id="tipoProvedor" name="tipoProvedor">
+              <option value="">Selecciona un Proveedor:</option>
               <% provedor.forEach(tp_provedor => { %>
                 <option value="<%= tp_provedor.ID_PROV %>">
                   <%= tp_provedor.NOMPROV %>
@@ -59,6 +60,7 @@
           <div class="mb-3">
             <label for="tipoProducto" class="form-label">Producto:</label>
             <select class="form-select" id="tipoProducto" name="tipoProducto">
+              <option value="">Selecciona un Tipo de Producto:</option>
               <% tp_producto.forEach(tp_producto => { %>
                 <option value="<%= tp_producto.ID_TIPO_PROD %>">
                   <%= tp_producto.DESCRIPCION %>

@@ -101,6 +101,7 @@ CREATE TABLE IF NOT EXISTS PRODUCTO (
     STOCK INTEGER,
     COSTO_PROD INTEGER,
     IMAGEN VARCHAR(50),
+    VALOR_VENTA INTEGER NOT NULL,
     constraint PK_PRODUCTO PRIMARY KEY (ID_PRODUCTO),
     CONSTRAINT FK_PROD_TIPO FOREIGN KEY (ID_TIPO_PROD) REFERENCES TIPO_PROD (ID_TIPO_PROD),
     CONSTRAINT FK_PROD_PROV FOREIGN KEY (ID_PROV) REFERENCES PROVEEDOR(ID_PROV)
@@ -339,6 +340,11 @@ CREATE PROCEDURE PRC_INS_PRODUCTO(
   IN p_costoProducto DECIMAL(10, 2),
   IN p_imagen VARCHAR(255)
 )
+BEGIN
+	INSERT INTO PRODUCTO (ID_PROV,ID_TIPO_PROD, NOMPROD,STOCK,COSTO_PROD,IMAGEN) VALUES (p_idProveedor,p_idTipoProducto,p_nombreProducto,p_stock,p_costoProducto,p_imagen);
+END;
+//
+
 DELIMITER //
 
 CREATE PROCEDURE PRC_ELI_PRODUCTO(
@@ -367,10 +373,18 @@ BEGIN
 	SELECT * FROM PRODUCTO WHERE ID_PRODUCTO = IDTS;
 END;//
 
+DELIMITER //
+CREATE PROCEDURE PRC_PROD_SIMPLE()
 BEGIN
-  INSERT INTO Producto (ID_PROV, ID_TIPO_PROD, NOMPROD, STOCK, COSTO_PROD, IMAGEN)
-  VALUES (p_idProveedor, p_idTipoProducto, p_nombreProducto, p_stock, p_costoProducto, p_imagen);
-END; //
+	SELECT ID_PRODUCTO"NUM_PRODUCTO", NOMPROD "QUEES", VALOR_VENTA "PRECIO" FROM PRODUCTO;
+END;
+//
+DELIMITER //
+CREATE PROCEDURE PRC_SERV_SIMPLE()
+BEGIN
+	SELECT ID_SERV "NUM_SERVICIO", NOMSERV "QUEES", VALOR "PRECIO" FROM SERVICIO;
+END
+//
 DELIMITER //
 CREATE PROCEDURE PRC_TOMAR_HORA(IDHORA INT, IDCLI INT)
 BEGIN
@@ -577,6 +591,7 @@ INSERT INTO TIPO_SERVICIO(DESCRIPCION) VALUES ('Revisión Kilometraje');
 INSERT INTO TIPO_SERVICIO(DESCRIPCION) VALUES ('Cambio de Aceite');
 INSERT INTO TIPO_SERVICIO(DESCRIPCION) VALUES ('Suspensión y Tren Delantero');
 INSERT INTO TIPO_SERVICIO(DESCRIPCION) VALUES ('Cuadratura');
+INSERT INTO TIPO_SERVICIO(DESCRIPCION) VALUES ('Otro');
 
 
 
@@ -785,4 +800,28 @@ insert into EMPLEADO (NUMRUN, NOMBRES, APELLIDOS, NUMFONO, EMAIL, FECHA_NAC, DIR
 insert into EMPLEADO (NUMRUN, NOMBRES, APELLIDOS, NUMFONO, EMAIL, FECHA_NAC, DIRECCION, ID_TIPO_EMP, ID_TIPO_CON, FECHA_CONTRATO, SUELDO, USUARIO, CONTRASENIA) values (28389940, 'Daune', 'Sayles', 915924771, 'dsayles2p@icio.us', '1993-05-09', '18 Forster Avenue', 4, 2, '2023-09-30', 1377914, 'dsayles2p', 'tN8Js!d!`n');
 insert into EMPLEADO (NUMRUN, NOMBRES, APELLIDOS, NUMFONO, EMAIL, FECHA_NAC, DIRECCION, ID_TIPO_EMP, ID_TIPO_CON, FECHA_CONTRATO, SUELDO, USUARIO, CONTRASENIA) values (26964352, 'Oliver', 'Housin', 934834820, 'ohousin2q@123-reg.co.uk', '1984-05-29', '415 Golf Course Point', 3, 4, '2023-06-06', 921457, 'ohousin2q', 'pL0XF&t!)~PXH');
 insert into EMPLEADO (NUMRUN, NOMBRES, APELLIDOS, NUMFONO, EMAIL, FECHA_NAC, DIRECCION, ID_TIPO_EMP, ID_TIPO_CON, FECHA_CONTRATO, SUELDO, USUARIO, CONTRASENIA) values (21278376, 'Stanford', 'Rousell', 912804438, 'srousell2r@photobucket.com', '1995-06-17', '92567 Annamark Hill', 3, 4, '2023-10-29', 778180, 'srousell2r', 'pI1*0HqzjbUp');
+
+/*PROVEEDORES*/
+
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Salestec', 'djaram0@dmoz.org', 925304092);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Gyza Automotriz', 'rheighton1@lulu.com', 938045824);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Pit Stop', 'ddean2@uiuc.edu', 981061266);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('IMSA', 'dbilbee3@dot.gov', 944679418);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Condor - Indumentaria Automotriz', 'awynn4@bizjournals.com', 943551620);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Loyal Centro Automotriz', 'dmartugin5@ehow.com', 991750963);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Autocar', 'jlillecrap6@sourceforge.net', 951878042);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Clínica Automotriz', 'mwhaymand7@xrea.com', 999434975);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Mobiliza Centro Automotriz', 'riston8@state.gov', 915032837);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Auto Prime', 'ceastbrook9@cbc.ca', 996459611);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Auto Aliado', 'fdavidgea@hao123.com', 972409041);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('MacGyver and Sons', 'vgeraldib@reverbnation.com', 989663657);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('ADN Car', 'iknowltonc@hao123.com', 969181895);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Bins Inc', 'mballayd@drupal.org', 932480643);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('CarTime', 'wallanbye@accuweather.com', 924700517);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('AutoForce Elite', 'astrondf@hatena.ne.jp', 978285874);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Crona-Rau', 'fosgarg@jalbum.net', 961381020);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Mundo Car', 'jthorringtonh@nyu.edu', 965003721);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Premium Service', 'pclacksoni@squarespace.com', 971998203);
+insert into PROVEEDOR (NOMPROV, EMAIL, NUMFONO) values ('Turbo Cars', 'jspendlovej@si.edu', 969925827);
+
 call prc_dias(11);
