@@ -292,8 +292,6 @@ document.getElementById('agregar').addEventListener('click', function() {
     }
 });
 
-var arreglito = [];
-
 document.getElementById('finalizar').addEventListener('click', function() {
     const comprobante = parseInt(document.getElementById('tipo_comp').value);
     const pago = parseInt(document.getElementById('forma_pago').value);

@@ -48,8 +48,6 @@ app.get('/ag_servicios', (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
-    // Verifica los resultados en la consola
-    console.log('datos', { TP_SERVICIO: results[0] });
     res.render('ag_servicios', { TP_SERVICIO: results[0] });
   });
 });
@@ -126,8 +124,6 @@ app.get('/productos', (req, res) => {
   });
 });
 
-
-
 app.get('/ver_servicios', (req, res) => {
   const query = 'CALL PRC_SERVICIO();';
   mysqlConnection.query(query, (error, results) => {
@@ -136,11 +132,9 @@ app.get('/ver_servicios', (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
-    console.log('datos', { servicio: results[0] })
     res.render('ver_servicios', { servicio: results[0] });
   });
 });
-
 
 app.get('/ver_horas', function (req, res) {
   var disponible = [];
@@ -167,8 +161,6 @@ app.get('/ver_horas', function (req, res) {
       return dateA - dateB;
     });
     res.render('hora', { dates: sorteado, horas: disponible });
-
-
   })
 });
 
@@ -182,7 +174,6 @@ app.get('/calendario', function (req, res) {
       id: hora.ID_HORA,
       fecha: hora.FECHA_INI,
       inicial: hora.HORA_INI,
-      // End date (optional)
     }));
     res.json(events);
   });
@@ -215,9 +206,11 @@ app.post('/finalizar-venta', (req, res) => {
     if(element.tipoVenta == 'Producto'){
       const crearProducto = `CALL PRC_DET_VENTA_PROD(${element.id},${element.cantidad},${element.subtotal});`;
       mysqlConnection.query(crearProducto);
+      console.log("Producto añadido Exitosamente.");
     }else{
       const crearServicio = `CALL PRC_DET_VENTA_SERV(${element.id},${element.cantidad},${element.subtotal});`;
       mysqlConnection.query(crearServicio);
+      console.log("Servicio añadido Exitosamente.");
     }
   });
   res.redirect('/');
@@ -236,7 +229,6 @@ app.post('/validar', function (req, res) {
   });
   console.log(datos);
 });
-
 
 app.post('/validarServ', upload.single('imagenServicio'), function (req, res) {
   const datos = req.body;
@@ -276,9 +268,6 @@ app.post('/eli_servicios/:id', (req, res) => {
   });
 });
 
-
-
-
 app.post('/edi_servicios/:id', (req, res) => {
   const id_servicio = req.params.id;
   const query = 'CALL PRC_BUS_SERV(?);';
@@ -294,7 +283,6 @@ app.post('/edi_servicios/:id', (req, res) => {
           res.status(500).send('Internal Server Error');
           return;
         }
-        console.log('datos', { TP_SERVICIO: tpResults[0][0] });
         res.render('edi_servicios', { servicio: id_servicio, TP_SERVICIO: tpResults[0][0] });
       });
     }
@@ -310,7 +298,6 @@ app.post('/updatearServicios/', upload.single('imagenServicio'), (req, res) => {
       console.error(error);
       res.status(500).send('Error al actualizar información del servicio');
     } else {
-      console.log(`${idServicio},${tipoServicio},${nombreServicio},${valorServicio}`);
       res.redirect('/ver_servicios');
     }
   });
@@ -324,7 +311,6 @@ app.get('/ver_empleados', (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
-    console.log('datos', { EMPLEADO: results[0] })
     res.render('ver_empleados', { EMPLEADO: results[0] });
   });
 });
@@ -355,16 +341,12 @@ app.get('/ag_empleados', (req, res) => {
     })
   ])
     .then(([tp_empleado, tp_contrato]) => {
-      console.log('datos', { tp_empleado, tp_contrato });
       res.render('ag_empleados', { tp_empleado, tp_contrato });
     })
     .catch((error) => {
       res.status(500).send('Internal Server Error');
     });
 });
-
-
-
 
 app.post('/valid_empleados', function (req, res) {
   const datos = req.body;
@@ -422,7 +404,6 @@ app.get('/ver_productos', (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
-    console.log('datos', { PRODUCTO: results[0] })
     res.render('ver_productos', { PRODUCTO: results[0] });
   });
 });
@@ -453,7 +434,6 @@ app.get('/ag_productos', (req, res) => {
     })
   ])
     .then(([tp_producto, provedor]) => {
-      console.log('datos', { tp_producto, provedor });
       res.render('ag_productos', { tp_producto, provedor });
     })
     .catch((error) => {
@@ -522,13 +502,9 @@ app.post('/eli_productos/:id', (req, res) => {
 
 app.get('/edi_productos/:id', (req, res) => {
   const idProducto = req.params.id;
-
-
   const queryProducto = 'SELECT * FROM Producto WHERE ID_PRODUCTO = ?';
   const queryTiposProductos = 'SELECT * FROM TIPO_PROD';
   const queryProveedores = 'SELECT * FROM Proveedor';
-
-
   Promise.all([
     new Promise((resolve, reject) => {
       mysqlConnection.query(queryProducto, [idProducto], (error, results) => {
@@ -560,7 +536,6 @@ app.get('/edi_productos/:id', (req, res) => {
   ])
     .then(([producto, tiposProductos, proveedores]) => {
       // Renderiza la vista edi_productos y pasa el producto, tipos de productos y proveedores
-      console.log('edi_productos', { producto, tiposProductos, proveedores });
       res.render('edi_productos', { producto, tiposProductos, proveedores });
     })
     .catch((error) => {
@@ -569,18 +544,14 @@ app.get('/edi_productos/:id', (req, res) => {
     });
 });
 
-
-
-
-// Ruta para procesar la actualización del producto
 app.post('/updatearProductos/:id', upload.single('imagenProducto'), (req, res) => {
   const idProducto = req.params.id;
   const { idProveedor, idTipoProducto, nombreProducto, stock, costoProducto } = req.body;
 
-  // Obtiene el nombre de la imagen si se proporciona
+ 
   const imageName = req.file ? req.file.filename : null;
 
-  // Realiza la actualización en la base de datos
+  
   const updateQuery =
     'UPDATE Producto SET ID_PROV=?, ID_TIPO_PROD=?, NOMPROD=?, STOCK=?, COSTO_PROD=?, IMAGEN=? WHERE ID_PRODUCTO=?';
 
@@ -598,7 +569,6 @@ app.post('/updatearProductos/:id', upload.single('imagenProducto'), (req, res) =
     }
   );
 });
-
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
