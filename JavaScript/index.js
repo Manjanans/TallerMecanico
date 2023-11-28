@@ -204,15 +204,11 @@ app.post('/updateHora', (req, res) => {
 
 app.post('/finalizar-venta', (req, res) => {
   const detalle = req.body.data;
-  console.log(detalle);
   const ids = req.body.aidis;
-  console.log(ids);
   var total = 0;
-
   detalle.forEach((element, index) => {
     total+=element.subtotal;
   });
-
   const crearVenta = `CALL PRC_CREAR_VENTA(${total},${ids.hora},${ids.comprobante},${ids.pago});`;
   mysqlConnection.query(crearVenta);
   detalle.forEach((element, index) => {
@@ -224,16 +220,13 @@ app.post('/finalizar-venta', (req, res) => {
       mysqlConnection.query(crearServicio);
     }
   });
-
   res.redirect('/');
-
 })
 
 app.post('/validar', function (req, res) {
   const datos = req.body;
   let descripcion = datos.descripcion;
   let registrar = `CALL PRC_INS_TS('${descripcion}')`;
-
   mysqlConnection.query(registrar, function (error) {
     if (error) {
       throw error;
