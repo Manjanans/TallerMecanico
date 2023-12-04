@@ -100,6 +100,30 @@ app.get('/pagos', (req, res) => {
   });
 });
 
+app.get('/tecnicos', (req, res) => {
+  const query = 'CALL PRC_TECNICOS();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
+app.get('/cajeros', (req, res) => {
+  const query = 'CALL PRC_CAJEROS();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results[0]);
+  });
+});
+
 app.get('/servicios', (req, res) => {
   const query = 'CALL PRC_SERV_SIMPLE();';
   mysqlConnection.query(query, (error, results) => {
@@ -204,11 +228,11 @@ app.post('/finalizar-venta', (req, res) => {
   mysqlConnection.query(crearVenta);
   detalle.forEach((element, index) => {
     if(element.tipoVenta == 'Producto'){
-      const crearProducto = `CALL PRC_DET_VENTA_PROD(${element.id},${element.cantidad},${element.subtotal});`;
+      const crearProducto = `CALL PRC_DET_VENTA_PROD(${element.id},${element.cantidad},${element.subtotal},${element.empleado});`;
       mysqlConnection.query(crearProducto);
       console.log("Producto añadido Exitosamente.");
     }else{
-      const crearServicio = `CALL PRC_DET_VENTA_SERV(${element.id},${element.cantidad},${element.subtotal});`;
+      const crearServicio = `CALL PRC_DET_VENTA_SERV(${element.id},${element.cantidad},${element.subtotal},${element.empleado});`;
       mysqlConnection.query(crearServicio);
       console.log("Servicio añadido Exitosamente.");
     }

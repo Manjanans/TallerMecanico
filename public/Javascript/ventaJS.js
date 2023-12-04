@@ -37,6 +37,8 @@ document.getElementById('horaSelect').addEventListener('change', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const compro = document.getElementById('tipo_comp');
     const pago = document.getElementById('forma_pago');
+    const tecnicos = document.getElementById('tecnicos');
+    const cajeros = document.getElementById('cajeros');
     $.ajax({
         url: '/comprobantes', 
         method: 'GET',
@@ -62,7 +64,33 @@ document.addEventListener('DOMContentLoaded', function() {
         error: function(error) {
             console.error('Error fetching data:', error);
         }
-    });    
+    });
+    $.ajax({
+        url: '/tecnicos', 
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {   
+            data.forEach(comps => {
+                tecnicos.innerHTML+=`<option value="${comps.NUM}">${comps.PTC}</option>`
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+    $.ajax({
+        url: '/cajeros', 
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {   
+            data.forEach(comps => {
+                cajeros.innerHTML+=`<option value="${comps.NUM}">${comps.PTC}</option>`
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching data:', error);
+        }
+    });      
 });
 
 document.getElementById('tipo_venta').addEventListener('change', function() {
@@ -96,7 +124,10 @@ document.getElementById('tipo_venta').addEventListener('change', function() {
                 error: function(error) {
                     console.error('Error fetching data:', error);
                 }
-            });    
+            });
+            document.getElementById('tecnicos').hidden=false;
+            document.getElementById('cajeros').hidden=true;
+            document.getElementById('cajeros').selectedIndex=0;  
         }else{
             $.ajax({
                 url: '/productos', 
@@ -114,7 +145,10 @@ document.getElementById('tipo_venta').addEventListener('change', function() {
                 error: function(error) {
                     console.error('Error fetching data:', error);
                 }
-            });    
+            });
+            document.getElementById('tecnicos').hidden=true;
+            document.getElementById('cajeros').hidden=false;
+            document.getElementById('tecnicos').selectedIndex=0;     
         }
     }else{
         document.getElementById('venta').hidden=true;
@@ -123,6 +157,8 @@ document.getElementById('tipo_venta').addEventListener('change', function() {
         document.getElementById('testo').hidden=true;
         document.getElementById('quantity').hidden=true;
         document.getElementById('quantity').value="";
+        document.getElementById('tecnicos').hidden=true;
+        document.getElementById('cajeros').hidden=true;  
     }
 });
 
@@ -243,22 +279,36 @@ document.getElementById('agregar').addEventListener('click', function() {
     const idProdServ = document.getElementById('idProdServ').value;
     const cantidad = document.getElementById('quantity').value;
     const valor = document.getElementById('valor').innerHTML;
+    const cajero = document.getElementById('cajeros').value;
+    const tecnicos = document.getElementById('tecnicos').value;
     const quantity = parseInt(cantidad);
     try{
         const value = parseInt(valor);
         const subtotal = quantity*value;
         console.log(subtotal);
-        if(cantidad == ""){
+        if(cantidad == "" || (cajero == "" && tecnicos == "")){
             alert("Todos los campos son obligatorios");
         }else{
-            const venta = {
-                tipoVenta: tipoVenta,
-                id: idProdServ,
-                cantidad: quantity,
-                subtotal: subtotal
-            };
-        
-            arreglito.push(venta);
+            if(cajero!=""){
+                const venta = {
+                    tipoVenta: tipoVenta,
+                    id: idProdServ,
+                    cantidad: quantity,
+                    subtotal: subtotal,
+                    empleado: cajero
+                };
+                arreglito.push(venta);
+            }
+            else if (tecnicos!=""){
+                const venta = {
+                    tipoVenta: tipoVenta,
+                    id: idProdServ,
+                    cantidad: quantity,
+                    subtotal: subtotal,
+                    empleado: tecnicos
+                };
+                arreglito.push(venta);
+            }
             const tbody = document.querySelector("tbody");
             const fila = document.createElement("tr");
             const celda1 = document.createElement("td");
@@ -286,6 +336,10 @@ document.getElementById('agregar').addEventListener('click', function() {
             document.getElementById('label').hidden=true;
             document.getElementById('end').hidden=false;
             document.getElementById('finalizar').hidden=false;
+            document.getElementById('cajeros').selectedIndex=0;
+            document.getElementById('cajeros').hidden=true;
+            document.getElementById('tecnicos').selectedIndex=0;
+            document.getElementById('tecnicos').hidden=true; 
         }
     }catch{
         alert("Ingresa un número en la cantidad.");
