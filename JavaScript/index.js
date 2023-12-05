@@ -193,8 +193,8 @@ app.get('/calendario', function (req, res) {
   mysqlConnection.query(query, (error, results) => {
     mtz.locale('es-CL');
     const events = results[0].map(hora => ({
-      title: mtz.tz(hora.HORA_INI, "HH:mm:ss", "America").format("HH:mm"), // Event title
-      start: mtz.tz(hora.FECHA_INI + " " + hora.HORA_INI, "DD/MM/YYYY HH:mm:ss", "America").toDate(), // Start date
+      title: mtz.tz(hora.HORA_INI, "HH:mm:ss", "America").format("HH:mm"),
+      start: mtz.tz(hora.FECHA_INI + " " + hora.HORA_INI, "DD/MM/YYYY HH:mm:ss", "America").toDate(),
       id: hora.ID_HORA,
       fecha: hora.FECHA_INI,
       inicial: hora.HORA_INI,
@@ -593,6 +593,33 @@ app.post('/updatearProductos/:id', upload.single('imagenProducto'), (req, res) =
     }
   );
 });
+
+app.get('/adm_horas',(req,res)=>{
+  const query = 'CALL PRC_ADM_HORAS()';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos de las horas');
+    } else {
+      const horas = results[0];
+      res.render('adm_hora', { horas });
+    }
+  })
+});
+
+app.post('/liberaHora', (req, res) => {
+  const id = req.body.valor;
+  const query = `CALL PRC_LIBERAR_HORA(${id})`;
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al liberar la hora');
+    } else {
+      console.log('Hora liberada correctamente');
+      res.redirect('/');
+    }
+  });
+})
 
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);

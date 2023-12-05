@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <title>Administración de Horas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
@@ -36,21 +35,43 @@
           </nav>
     </header>
 
-    <div class="pt-5 container d-flex text-center justify-content-center">
-        <div id="calendar">
-        </div>
-        <br>
-    </div>
+    <section>
+        <div class="container pt-2 pb-2 d-flex text-center col-6 justify-content-center">
+            <table class="table border border-primary">
+                <thead>
+                  <tr>
+                    <th scope="col">Número de Hora</th>
+                    <th scope="col">Número de Cliente</th>
+                    <th scope="col">Rut del Cliente</th>
+                    <th scope="col">Nombre Completo del Cliente</th>
+                    <th scope="col">Fecha de Inicio</th>
+                    <th scope="col">Hora de Inicio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% horas.forEach(hora => { %>
+                    <tr>
+                      <th scope="row"><%= hora.NUMHORA %></th>
+                      <td><%= hora.NUMCLIENTE %></td>
+                      <td><%= hora.NCLI %></td>
+                      <td><%= hora.RCLI %></td>
+                      <td><%= hora.DINICIO.getDate() %>/<%= hora.DINICIO.getMonth()+1 %>/<%= hora.DINICIO.getFullYear() %></td>
+                      <td><%= hora.TINICIO %></td>
+                      <td>
+                        <button type="button" class="btn btn-danger" id="btnLiberar" value="<%= hora.NUMHORA %>">Liberar Hora</button>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+            </table>
+        </div> 
+    </section>
 
-    <div class="pt-5 container d-flex col-6 text-center justify-content-center">
-        <button id="custom-alert-btn" class="btn btn-primary">Seleccionar Hora</button>
-    </div>
-    
     <div class="modal" tabindex="-1" role="dialog" id="custom-alert-modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">¿Quieres tomar la hora?</h5>
+                    <h5 class="modal-title">¿Estás seguro de liberar la hora?</h5>
                 </div>
                 <div class="modal-body" id="cuerpo">
                 </div>
@@ -66,7 +87,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">¡Hora Tomada Exitosamente!</h5>
+                    <h5 class="modal-title">¡Hora Liberada Exitosamente!</h5>
                 </div>
                 <div class="modal-body" id="cuerpo">
                     Serás redirigido al index en 1 segundo.
@@ -74,12 +95,14 @@
             </div>
         </div>
     </div>
-        
+
+    
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
-    <script src="/Javascript/tomaHora.js"></script>
+    <script src="/Javascript/admHora.js"></script>
 </body>
 </html>
