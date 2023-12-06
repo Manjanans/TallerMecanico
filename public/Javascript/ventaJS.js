@@ -114,7 +114,6 @@ document.getElementById('tipo_venta').addEventListener('change', function() {
                 success: function(data) {   
                     data.forEach(servs => {
                         var opcion = document.createElement('option');
-                        
                         opcion.value = servs.NUM_SERVICIO;
                         opcion.innerHTML = servs.QUEES;
                         seleccion.appendChild(opcion);

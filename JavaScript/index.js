@@ -607,6 +607,45 @@ app.get('/adm_horas',(req,res)=>{
   })
 });
 
+app.get('/ag_pedido',(req,res)=>{
+  const query = 'CALL PRC_PROV_DISP()';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos de los proveedores');
+    } else {
+      const proveedores = results[0];
+      res.render('ag_pedido', { proveedores });
+    }
+  })
+});
+
+app.get('/prods_pedido',(req,res)=>{
+  const id = req.query.prov;
+  const query = `CALL PRC_PRODS_PROV(${id})`;
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos de los productos');
+    } else {
+      res.json(results[0]);
+    }
+  })
+});
+
+app.get('/pedidos',(req,res)=>{
+  const query = 'CALL PRC_VER_PEDIDOS()';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos de los pedidos');
+    } else {
+      const pedidos = results[0];
+      res.render('ver_pedidos', { pedidos });
+    }
+  })
+});
+
 app.post('/liberaHora', (req, res) => {
   const id = req.body.valor;
   const query = `CALL PRC_LIBERAR_HORA(${id})`;
