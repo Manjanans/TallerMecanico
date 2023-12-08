@@ -323,7 +323,7 @@ document.getElementById('agregar').addEventListener('click', function() {
             fila.appendChild(celda3);
             fila.appendChild(celda4);
             tbody.appendChild(fila);
-            console.log(arreglito);
+            
             document.getElementById('tipo_venta').selectedIndex=0;
             document.getElementById('tipo_comp').selectedIndex=0;
             document.getElementById('venta').hidden=true;

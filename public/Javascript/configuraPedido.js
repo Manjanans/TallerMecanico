@@ -1,4 +1,25 @@
 var productos=[];
+var idProv = 0;
+var value = 0;
+var carrito = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    const empleados = document.getElementById('empleados');
+    $.ajax({
+        url: '/employee', 
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {   
+            data.forEach(comps => {
+                empleados.innerHTML+=`<option value="${comps.NUMEMP}">${comps.NOMEMP}</option>`
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+});
+
 
 document.getElementById('provSelect').addEventListener('change', function() {
     const prov = document.getElementById('provSelect').value;
@@ -66,6 +87,7 @@ document.getElementById('prodsProv').addEventListener('change', function() {
                 response.forEach(producto => {
                     if(producto.NUM_PROD == prod){
                         cost.innerHTML = producto.VALOR_UNITARIO;
+                        value = producto.VALOR_UNITARIO;
                     }
                 });
             },
@@ -79,6 +101,7 @@ document.getElementById('prodsProv').addEventListener('change', function() {
         cost.innerHTML = "";
         document.getElementById('testo').hidden = true;
         document.getElementById('label').hidden = true;
+        document.getElementById('agregar').hidden=true;
     }
 });
 
@@ -96,6 +119,7 @@ document.getElementById('idProd').addEventListener('keyup', function() {
                 response.forEach(producto => {
                     if(producto.NUM_PROD == codigo){
                         cost.innerHTML = producto.VALOR_UNITARIO;
+                        value = producto.VALOR_UNITARIO;
                     }
                 });
             },
@@ -115,6 +139,100 @@ document.getElementById('idProd').addEventListener('keyup', function() {
         document.getElementById('testo').hidden = true;
         document.getElementById('label').hidden = true;
         codigos.selectedIndex=0;
+        document.getElementById('agregar').hidden=true;
+    }
+    
+});
+
+document.getElementById('agregar').addEventListener('click', function() {
+    const id = document.getElementById('idProd').value;
+    const prov = document.getElementById('provSelect').value;
+    const cant = document.getElementById('quantity').value;
+    var bul = false;
+    
+    if(cant!=""){
+        if(carrito.length==0){
+            idProv=parseInt(prov);
+            document.getElementById('finalizar').hidden=false;
+            document.getElementById('empleados').hidden=false;
+        }
+
+        carrito.forEach((element) => {
+            if(element.idProd == id){
+                element.cantidad = parseInt(element.cantidad) + parseInt(cant);
+                bul = true;
+            }
+        });
+
+        if(!bul){
+            const producto = {
+                idProd:id,
+                costo:value,
+                nombre:document.getElementById('prodsProv').options[document.getElementById('prodsProv').selectedIndex].text,
+                cantidad:parseInt(cant)
+            }    
+            carrito.push(producto);
+        }
+        
+        const tbody = document.querySelector('tbody');
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+
+        carrito.forEach((element) => {
+            const fila = document.createElement("tr");
+            const celda1 = document.createElement("td");
+            const celda2 = document.createElement("td");
+            const celda3 = document.createElement("td");
+            const celda4 = document.createElement("td");
+            const celda5 = document.createElement("td");
+            celda1.textContent = element.idProd;
+            celda2.textContent = element.nombre;
+            celda3.textContent = element.cantidad;
+            celda4.textContent = element.costo;
+            celda5.textContent = element.costo*element.cantidad;
+            fila.appendChild(celda1);
+            fila.appendChild(celda2);
+            fila.appendChild(celda3);
+            fila.appendChild(celda4);
+            fila.appendChild(celda5);
+            tbody.appendChild(fila);
+        });
+
+        document.getElementById('provSelect').disabled=true;
+        document.getElementById('prodsProv').selectedIndex=0;
+        document.getElementById('idProd').value="";
+        document.getElementById('testo').hidden = true;
+        document.getElementById('label').hidden = true;
+        document.getElementById('quantity').value="";
+
+    }else{
+        alert("Ingresa un número en cantidad.");
+    }
+});
+
+document.getElementById('finalizar').addEventListener('click', function() {
+    const emp = document.getElementById('empleados').value;
+    if(emp!=""){
+        $.ajax({
+            url: '/agregarPedido', 
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                data: carrito, proveedor:idProv, empleado:emp,}),
+            success: function(data) {
+                $(document).ready(function(){
+                    $('#success').modal('show');   
+                    setTimeout(function(){window.location.href = '/pedidos';},1000);
+                });
+                
+            },
+            error: function(error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }else{
+        alert("Selecciona un empleado.");
     }
     
 });

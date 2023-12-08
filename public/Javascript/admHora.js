@@ -1,7 +1,6 @@
 var valor;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Add a click event listener to all buttons with the class 'btnLiberar'
     document.querySelectorAll('#btnLiberar').forEach(function(button) {
         button.addEventListener('click', function() {
             valor = button.value;

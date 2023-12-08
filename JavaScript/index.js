@@ -658,6 +658,76 @@ app.post('/liberaHora', (req, res) => {
       res.redirect('/');
     }
   });
+});
+
+app.post('/recepcionaPedido', (req, res) => {
+  const id = req.body.valor;
+  const emp = req.body.idemp;
+  const query = `CALL PRC_ACEPTA_PED(?,?)`;
+  mysqlConnection.query(query,[emp,id], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al liberar la hora');
+    } else {
+      console.log('Hora liberada correctamente');
+      res.redirect('/pedidos');
+    }
+  });
+});
+
+app.get('/detallePedido', (req, res) => {
+  const id = req.query.data;
+  const query = `CALL PRC_DETALLE(?)`;
+  mysqlConnection.query(query,[id], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos del pedido');
+    } else {
+      res.json(results[0]);
+    }
+  })
+})
+
+app.post('/agregarPedido', (req, res) => {
+  var arreglo = req.body.data;
+  var proveedor = req.body.proveedor;
+  var emp = req.body.empleado;
+  var total = 0;
+
+  arreglo.forEach((element)=>{
+    total+=element.costo*element.cantidad;
+  });
+
+  const pedido = "CALL PRC_AGG_PED(?,?)";
+  const det_ped = "CALL PRC_AGG_DET_PED(?,?,?,?)";
+  mysqlConnection.query(pedido, [emp,total], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener insertar el pedido.');
+    }
+  });
+  arreglo.forEach((element)=>{
+    const total = element.costo*element.cantidad;
+    mysqlConnection.query(det_ped, [element.idProd,element.cantidad,element.costo,total], (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener insertar el pedido.');
+      }
+    });
+  });
+  res.redirect('/');
+});
+
+app.get('/employee', (req, res) => {
+  const query = 'CALL PRC_LIST_EMP()';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos de los empleados');
+    } else {
+      res.json(results[0]);
+    }
+  });
 })
 
 app.listen(port, () => {
