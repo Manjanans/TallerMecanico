@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
 document.getElementById('provSelect').addEventListener('change', function() {
     const prov = document.getElementById('provSelect').value;
     const prods = document.getElementById('prodsProv');
@@ -181,21 +180,29 @@ document.getElementById('agregar').addEventListener('click', function() {
 
         carrito.forEach((element) => {
             const fila = document.createElement("tr");
+            const eliminar = document.createElement('button');
+            eliminar.textContent = "Eliminar producto";
+            eliminar.className = "btn btn-danger";
+            eliminar.id = "eliminarProducto";
+            eliminar.value = element.idProd;
             const celda1 = document.createElement("td");
             const celda2 = document.createElement("td");
             const celda3 = document.createElement("td");
             const celda4 = document.createElement("td");
             const celda5 = document.createElement("td");
+            const celda6 = document.createElement("td");
             celda1.textContent = element.idProd;
             celda2.textContent = element.nombre;
             celda3.textContent = element.cantidad;
             celda4.textContent = element.costo;
             celda5.textContent = element.costo*element.cantidad;
+            celda6.appendChild(eliminar);
             fila.appendChild(celda1);
             fila.appendChild(celda2);
             fila.appendChild(celda3);
             fila.appendChild(celda4);
             fila.appendChild(celda5);
+            fila.appendChild(celda6)
             tbody.appendChild(fila);
         });
 
@@ -205,7 +212,6 @@ document.getElementById('agregar').addEventListener('click', function() {
         document.getElementById('testo').hidden = true;
         document.getElementById('label').hidden = true;
         document.getElementById('quantity').value="";
-
     }else{
         alert("Ingresa un número en cantidad.");
     }
@@ -235,4 +241,55 @@ document.getElementById('finalizar').addEventListener('click', function() {
         alert("Selecciona un empleado.");
     }
     
+});
+
+document.querySelector('tbody').addEventListener('click', function(event) {
+    if (event.target && event.target.id == 'eliminarProducto') {
+        const id = event.target.value;
+        const tbody = document.querySelector('tbody');
+        if (carrito.length == 1) {
+            carrito.pop();
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+        } else {
+            carrito = carrito.filter((element) => element.idProd != id);
+            console.log(carrito);
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+            carrito.forEach((element) => {
+                const fila = document.createElement('tr');
+                const eliminar = document.createElement('button');
+                eliminar.textContent = 'Eliminar producto';
+                eliminar.className = 'btn btn-danger';
+                eliminar.id = 'eliminarProducto';
+                const celda1 = document.createElement('td');
+                const celda2 = document.createElement('td');
+                const celda3 = document.createElement('td');
+                const celda4 = document.createElement('td');
+                const celda5 = document.createElement('td');
+                const celda6 = document.createElement('td');
+                celda1.textContent = element.idProd;
+                celda2.textContent = element.nombre;
+                celda3.textContent = element.cantidad;
+                celda4.textContent = element.costo;
+                celda5.textContent = element.costo * element.cantidad;
+                celda6.appendChild(eliminar);
+                fila.appendChild(celda1);
+                fila.appendChild(celda2);
+                fila.appendChild(celda3);
+                fila.appendChild(celda4);
+                fila.appendChild(celda5);
+                fila.appendChild(celda6);
+                tbody.appendChild(fila);
+            });
+        }
+    }
+    if(carrito.length == 0){
+        document.getElementById('finalizar').hidden = true;
+        document.getElementById('agregar').hidden = true;
+        document.getElementById('empleados').hidden = true;
+        document.getElementById('provSelect').disabled = false;
+    }
 });
