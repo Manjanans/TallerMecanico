@@ -20,21 +20,21 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-              <a class="nav-link" aria-current="page" href="/">Clientes</a>
+              <a class="nav-link active" aria-current="page" href="/">Clientes</a>
               <a class="nav-link" href="/ver_horas">Ver Horas</a>
               <a class="nav-link" href="/ver_empleados">Empleados</a>
-              <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active" href="/ver_productos" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  Productos
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="/ag_productos">Agregar</a></li>
-                </ul>
-              </div>
+              <a class="nav-link" href="/ver_productos">Productos</a>
               <a class="nav-link" href="/venta">Venta</a>
               <a class="nav-link" href="/pedidos">Pedidos</a>
-              <a class="nav-link" href="/ver_proveedores">Proveedores</a>
+              <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="/ver_proveedores" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  Proveedores
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="/ag_proveedores">Agregar</a></li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -44,35 +44,29 @@
     <table class="table border border-primary">
         <thead>
           <tr>
-            <th scope="col">SKU Producto</th>
-            <th scope="col">Provedor</th>
-            <th scope="col">tipo de producto</th>
-            <th scope="col">Nombre producto</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Costo producto</th>
-            <th scope="col">IMAGEN</th>
-            <th scope="col">Eliminar Producto</th>
-            <th scope="col">Editar Producto</th>
+            <th scope="col">Nº PROVEDOR</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th scope="col">Fono</th>
+            <th scope="col">Eliminar Proveedor</th>
+            <th scope="col">Editar Proveedor</th>
           </tr>
         </thead>
         <tbody>
-          <% PRODUCTO.forEach(PRODUCTOItem => { %>
+          <% PROVEDOR.forEach(PROVEDORITEM => { %>
             <tr>
-              <th scope="row"><%= PRODUCTOItem.ID_PRODUCTO %></th>
-              <td><%= PRODUCTOItem.ID_PROV %></td>
-              <td><%= PRODUCTOItem.ID_TIPO_PROD %></td>
-              <td><%= PRODUCTOItem.NOMPROD %></td>
-              <td><%= PRODUCTOItem.STOCK %></td>
-              <td><%= PRODUCTOItem.COSTO_PROD %></td>
-              <td><img src="/Images/<%= PRODUCTOItem.IMAGEN %>" alt="<%= PRODUCTOItem.IMAGEN %>" class="img-fluid" style="width: 15%; height: 15%;"></td>
+              <th scope="row"><%= PROVEDORITEM.ID_PROV %></th>
+              <td><%= PROVEDORITEM.NOMPROV %></td>
+              <td><%= PROVEDORITEM.EMAIL %></td>
+              <td><%= PROVEDORITEM.NUMFONO %></td> 
               <td>
-                <form action="/eli_productos/<%= PRODUCTOItem.ID_PRODUCTO %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el servicio <%= PRODUCTOItem.ID_PRODUCTO %>?');">
-                  <button type="submit" class="btn btn-danger" >Eliminar Producto</button>
+                <form action="/eli_proveedores/<%= PROVEDORITEM.ID_PROV %>" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar el proveedor <%= PROVEDORITEM.ID_PROV %>?');">
+                  <button type="submit" class="btn btn-danger" >Eliminar</button>
                 </form>
               </td>
               <td>
-                <form action="/edi_productos/<%= PRODUCTOItem.ID_PRODUCTO %>" method="get" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que deseas editar el producto <%= PRODUCTOItem.ID_PRODUCTO %>?');">
-                  <button type="submit" class="btn btn-primary">Editar Producto</button>
+                <form action="/editar_proveedor/<%= PROVEDORITEM.ID_PROV %>" method="get" onsubmit="return confirm('¿Estás seguro de que deseas editar el proveedor <%= PROVEDORITEM.ID_PROV %>?');">
+                  <button type="submit" class="btn btn-warning" >Editar</button>
                 </form>
               </td>
             </tr>
@@ -80,7 +74,7 @@
           
         </tbody>
     </table>
-  </div> 
+</div> 
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

@@ -777,6 +777,82 @@ BEGIN
 END;
 //
 
+DELIMITER //
+
+DELIMITER //
+CREATE PROCEDURE PRC_PROVEEDORES()
+BEGIN
+	SELECT * FROM proveedor ;
+END;
+//
+CREATE PROCEDURE PRC_INS_PROV(
+    IN p_id_prov INT,
+    IN p_nomprov VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_numfono VARCHAR(15)
+)
+BEGIN
+    IF NOT EXISTS (SELECT * FROM proveedores WHERE id_prov = p_id_prov) THEN
+        INSERT INTO proveedores (id_prov, nomprov, email, numfono)
+        VALUES (p_id_prov, p_nomprov, p_email, p_numfono);
+
+        SELECT 'Proveedor agregado correctamente.' AS mensaje;
+    ELSE
+        SELECT 'El proveedor ya existe.' AS mensaje;
+    END IF;
+END; //
+
+DELIMITER //
+
+CREATE PROCEDURE PRC_ELI_PROVEEDOR(IN p_id_proveedor INT)
+BEGIN
+  DECLARE mensaje VARCHAR(100);
+
+  -- Elimina productos asociados al proveedor
+DELETE FROM producto 
+WHERE
+    ID_PROV = p_id_proveedor;
+
+  -- Elimina el proveedor
+DELETE FROM proveedor 
+WHERE
+    ID_PROV = p_id_proveedor;
+
+  SET mensaje = 'Proveedor eliminado correctamente';
+
+  -- Retorna el mensaje
+SELECT mensaje AS mensaje;
+  
+END;//
+DELIMITER //
+
+CREATE PROCEDURE PRC_Edi_Proveedor(IN idProveedor INT, IN nombreProveedor VARCHAR(255), IN correoProveedor VARCHAR(255), IN numeroProveedor VARCHAR(20))
+BEGIN
+    UPDATE proveedor
+    SET NOMPROV = nombreProveedor, EMAIL = correoProveedor, NUMFONO = numeroProveedor
+    WHERE ID_PROV = idProveedor;
+END ;//
+
+DELIMITER //
+
+CREATE PROCEDURE PRC_BUS_PROV(IN idProveedor INT)
+BEGIN
+    SELECT * FROM proveedor WHERE ID_PROV = idProveedor;
+END ;//
+
+DELIMITER //
+
+CREATE PROCEDURE PRC_UpdatearProducto(IN idProducto INT, IN idProveedor INT, IN idTipoProducto INT, IN nombreProducto VARCHAR(255), IN stock INT, IN costoProducto DECIMAL(10, 2), IN imageName VARCHAR(255))
+BEGIN
+    UPDATE Producto
+    SET ID_PROV = idProveedor,
+        ID_TIPO_PROD = idTipoProducto,
+        NOMPROD = nombreProducto,
+        STOCK = stock,
+        COSTO_PROD = costoProducto,
+        IMAGEN = imageName
+    WHERE ID_PRODUCTO = idProducto;
+END ;//
 
 								/* INSERTS */
 

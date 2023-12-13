@@ -730,6 +730,96 @@ app.get('/employee', (req, res) => {
   });
 })
 
+
+
+
+app.get('/ver_proveedores', (req, res) => {
+  const query = 'CALL PRC_PROVEEDORES();';
+  mysqlConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.render('ver_proveedores', { PROVEDOR: results[0] });
+  });
+});
+
+
+app.get('/ag_proveedores', (req, res) => {
+  res.render('ag_proveedores');
+});
+
+app.post('/validarProv', function (req, res) {
+  const datos = req.body;
+  const { nombre, correo, numero } = datos;
+
+  let registrar = `CALL PRC_INS_PROV(?, ?, ?)`;
+  mysqlConnection.query(registrar, [nombre, correo, numero], function (error, results) {
+    if (error) {
+      console.error('Error en la consulta SQL:', error);
+      return res.status(500).send('Error al almacenar los datos. Detalles: ' + error.message);
+    } else {
+      console.log('Datos almacenados correctamente:', results);
+      return res.redirect('ver_proveedores');
+    }
+  });
+});
+
+
+app.post('/eli_proveedores/:id', (req, res) => {
+  const id_proveedor = req.params.id;
+  const query = 'CALL PRC_ELI_PROVEEDOR(?)';
+
+  mysqlConnection.query(query, [id_proveedor], (error, results) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).send('Error al eliminar el proveedor');
+    }
+
+    const mensaje = results[0][0].mensaje;
+
+    if (mensaje === 'Proveedor eliminado correctamente') {
+      console.log('Proveedor eliminado correctamente');
+      return res.redirect('/ver_proveedores');
+    } else {
+      console.log('El proveedor no existe');
+      return res.status(404).send('El proveedor no existe');
+    }
+  });
+});
+
+app.get('/editar_proveedor/:id', (req, res) => {
+  const id_proveedor = req.params.id;
+  const query = 'CALL PRC_BUS_PROV(?)';
+  mysqlConnection.query(query, [id_proveedor], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener los datos del proveedor');
+    } else {
+      const proveedor = results[0][0]; 
+      res.render('edi_proveedores', { servicio: id_proveedor, proveedor });
+    }
+  });
+});
+
+
+app.post('/edita_proveedor/:id', (req, res) => {
+  const id_proveedor = req.params.id;
+  const { nombre, correo, numero } = req.body;
+
+  const query = 'CALL PRC_Edi_Proveedor(?, ?, ?, ?)';
+  
+  mysqlConnection.query(query, [id_proveedor, nombre, correo, numero], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Error al editar el proveedor');
+    } else {
+      console.log('Proveedor editado correctamente');
+      res.redirect('/ver_proveedores');
+    }
+  });
+});
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
 }); 
