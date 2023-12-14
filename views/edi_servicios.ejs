@@ -11,34 +11,57 @@
 </head>
 
 <body>
-
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand active" href="/ver_servicios">Servicios</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link" aria-current="page" href="/">Clientes</a>
-          <a class="nav-link" href="/ver_horas">Ver Horas</a>
-          <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Opciones
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/ag_servicios">Agregar</a></li>
-              <li><a class="dropdown-item" href="#">Eliminar</a></li>
-              <li><a class="dropdown-item" href="#">Editar</a></li>
-            </ul>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/ver_servicios">Servicios</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link active" aria-current="page" href="/">Clientes</a>
+              <a class="nav-link" href="/ver_horas">Ver Horas</a>
+              <a class="nav-link" href="/ver_empleados">Empleados</a>
+              <a class="nav-link" href="/ver_productos">Productos</a>
+              <a class="nav-link" href="/venta">Venta</a>
+              <a class="nav-link" href="/pedidos">Pedidos</a>
+              <a class="nav-link" href="/ver_proveedores">Proveedores</a>
+              <a class="nav-link" href="/analisis" data-bs-toggle="modal" data-bs-target="#exampleModal">Ver informe</a>
+            </div>
           </div>
-          <a class="nav-link" href="/pedidos">Pedidos</a>
         </div>
-      </div>
+      </nav>
+  </header>
+  <form action="/analisis" method="post">
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Seleccione rango de fechas para el informe</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fechaFin" class="form-label">Fecha de Fin:</label>
+                        <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Seleccionar fechas</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </nav>
+</form>
 
   <div class="container mt-4">
     <form action="/updatearServicios/" method="post" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que deseas editar el servicio <%= servicio.ID_SERV %>?');">

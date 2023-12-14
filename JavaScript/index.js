@@ -8,6 +8,7 @@ const mtz = require('moment-timezone');
 const multer = require('multer');
 require('moment/locale/es');
 mtz.locale('es-CL');
+const { format } = require('date-fns');
 
 const app = express();
 const port = 3000;
@@ -222,16 +223,16 @@ app.post('/finalizar-venta', (req, res) => {
   const ids = req.body.aidis;
   var total = 0;
   detalle.forEach((element, index) => {
-    total+=element.subtotal;
+    total += element.subtotal;
   });
   const crearVenta = `CALL PRC_CREAR_VENTA(${total},${ids.hora},${ids.comprobante},${ids.pago});`;
   mysqlConnection.query(crearVenta);
   detalle.forEach((element, index) => {
-    if(element.tipoVenta == 'Producto'){
+    if (element.tipoVenta == 'Producto') {
       const crearProducto = `CALL PRC_DET_VENTA_PROD(${element.id},${element.cantidad},${element.subtotal},${element.empleado});`;
       mysqlConnection.query(crearProducto);
       console.log("Producto añadido Exitosamente.");
-    }else{
+    } else {
       const crearServicio = `CALL PRC_DET_VENTA_SERV(${element.id},${element.cantidad},${element.subtotal},${element.empleado});`;
       mysqlConnection.query(crearServicio);
       console.log("Servicio añadido Exitosamente.");
@@ -314,7 +315,7 @@ app.post('/edi_servicios/:id', (req, res) => {
 });
 
 app.post('/updatearServicios/', upload.single('imagenServicio'), (req, res) => {
-  const { idServicio,tipoServicio, nombreServicio, valorServicio } = req.body;
+  const { idServicio, tipoServicio, nombreServicio, valorServicio } = req.body;
   const imageName = req.file ? req.file.filename : null;
   const query = 'CALL PRC_UPD_SERV(?, ?, ?, ?, ?);';
   mysqlConnection.query(query, [tipoServicio, nombreServicio, valorServicio, imageName, idServicio], (error) => {
@@ -348,7 +349,7 @@ app.get('/ag_empleados', (req, res) => {
           console.error('Error executing query1:', error);
           reject(error);
         } else {
-          resolve(results[0]); 
+          resolve(results[0]);
         }
       });
     }),
@@ -359,7 +360,7 @@ app.get('/ag_empleados', (req, res) => {
           console.error('Error executing query2:', error);
           reject(error);
         } else {
-          resolve(results[0]); 
+          resolve(results[0]);
         }
       });
     })
@@ -572,10 +573,10 @@ app.post('/updatearProductos/:id', upload.single('imagenProducto'), (req, res) =
   const idProducto = req.params.id;
   const { idProveedor, idTipoProducto, nombreProducto, stock, costoProducto } = req.body;
 
- 
+
   const imageName = req.file ? req.file.filename : null;
 
-  
+
   const updateQuery =
     'UPDATE Producto SET ID_PROV=?, ID_TIPO_PROD=?, NOMPROD=?, STOCK=?, COSTO_PROD=?, IMAGEN=? WHERE ID_PRODUCTO=?';
 
@@ -594,7 +595,7 @@ app.post('/updatearProductos/:id', upload.single('imagenProducto'), (req, res) =
   );
 });
 
-app.get('/adm_horas',(req,res)=>{
+app.get('/adm_horas', (req, res) => {
   const query = 'CALL PRC_ADM_HORAS()';
   mysqlConnection.query(query, (error, results) => {
     if (error) {
@@ -607,7 +608,7 @@ app.get('/adm_horas',(req,res)=>{
   })
 });
 
-app.get('/ag_pedido',(req,res)=>{
+app.get('/ag_pedido', (req, res) => {
   const query = 'CALL PRC_PROV_DISP()';
   mysqlConnection.query(query, (error, results) => {
     if (error) {
@@ -620,7 +621,7 @@ app.get('/ag_pedido',(req,res)=>{
   })
 });
 
-app.get('/prods_pedido',(req,res)=>{
+app.get('/prods_pedido', (req, res) => {
   const id = req.query.prov;
   const query = `CALL PRC_PRODS_PROV(${id})`;
   mysqlConnection.query(query, (error, results) => {
@@ -633,7 +634,7 @@ app.get('/prods_pedido',(req,res)=>{
   })
 });
 
-app.get('/pedidos',(req,res)=>{
+app.get('/pedidos', (req, res) => {
   const query = 'CALL PRC_VER_PEDIDOS()';
   mysqlConnection.query(query, (error, results) => {
     if (error) {
@@ -664,7 +665,7 @@ app.post('/recepcionaPedido', (req, res) => {
   const id = req.body.valor;
   const emp = req.body.idemp;
   const query = `CALL PRC_ACEPTA_PED(?,?)`;
-  mysqlConnection.query(query,[emp,id], (error, results) => {
+  mysqlConnection.query(query, [emp, id], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al liberar la hora');
@@ -678,7 +679,7 @@ app.post('/recepcionaPedido', (req, res) => {
 app.get('/detallePedido', (req, res) => {
   const id = req.query.data;
   const query = `CALL PRC_DETALLE(?)`;
-  mysqlConnection.query(query,[id], (error, results) => {
+  mysqlConnection.query(query, [id], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al obtener los datos del pedido');
@@ -694,21 +695,21 @@ app.post('/agregarPedido', (req, res) => {
   var emp = req.body.empleado;
   var total = 0;
 
-  arreglo.forEach((element)=>{
-    total+=element.costo*element.cantidad;
+  arreglo.forEach((element) => {
+    total += element.costo * element.cantidad;
   });
 
   const pedido = "CALL PRC_AGG_PED(?,?)";
   const det_ped = "CALL PRC_AGG_DET_PED(?,?,?,?)";
-  mysqlConnection.query(pedido, [emp,total], (error, results) => {
+  mysqlConnection.query(pedido, [emp, total], (error, results) => {
     if (error) {
       console.error(error);
       res.status(500).send('Error al obtener insertar el pedido.');
     }
   });
-  arreglo.forEach((element)=>{
-    const total = element.costo*element.cantidad;
-    mysqlConnection.query(det_ped, [element.idProd,element.cantidad,element.costo,total], (error, results) => {
+  arreglo.forEach((element) => {
+    const total = element.costo * element.cantidad;
+    mysqlConnection.query(det_ped, [element.idProd, element.cantidad, element.costo, total], (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Error al obtener insertar el pedido.');
@@ -797,19 +798,33 @@ app.get('/editar_proveedor/:id', (req, res) => {
       console.error(error);
       res.status(500).send('Error al obtener los datos del proveedor');
     } else {
-      const proveedor = results[0][0]; 
+      const proveedor = results[0][0];
       res.render('edi_proveedores', { servicio: id_proveedor, proveedor });
     }
   });
 });
 
+app.post('/analisis', (req, res) => {
+  const fechaInicio = format(new Date(req.body.fechaInicio), 'yyyy-MM-dd');
+  const fechaFin = format(new Date(req.body.fechaFin), 'yyyy-MM-dd');
+
+  mysqlConnection.query('CALL PRC_ANALISIS(?, ?)', [fechaInicio, fechaFin], (error, results) => {
+    if (error) {
+      console.error('Error al llamar al procedimiento almacenado:', error);
+      throw error;
+    }
+    const resultado = results[0][0];
+    console.log(resultado);
+    res.render('analisis', { resultado });
+  });
+});
 
 app.post('/edita_proveedor/:id', (req, res) => {
   const id_proveedor = req.params.id;
   const { nombre, correo, numero } = req.body;
 
   const query = 'CALL PRC_Edi_Proveedor(?, ?, ?, ?)';
-  
+
   mysqlConnection.query(query, [id_proveedor, nombre, correo, numero], (error, results) => {
     if (error) {
       console.error(error);
